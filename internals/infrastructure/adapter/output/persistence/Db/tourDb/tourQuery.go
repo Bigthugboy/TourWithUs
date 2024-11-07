@@ -8,19 +8,23 @@ import (
 
 func (t *TourRepositories) CreateTour(tourObject tourDto.TourObject) (tourDto.CreateTourResponse, error) {
 	if t.DB == nil {
-		return tourDto.CreateTourResponse{}, errors.New("tour DB Not Initialized")
+		return tourDto.CreateTourResponse{}, errors.New("tour DB is not initialized")
 	}
 	if err := t.DB.Create(&tourObject).Error; err != nil {
-		return tourDto.CreateTourResponse{}, fmt.Errorf("exception inserting new tourist: %w", err)
+		return tourDto.CreateTourResponse{}, fmt.Errorf("error inserting new tour: %w", err)
 	}
-	var response tourDto.CreateTourResponse
-	response.Id = tourObject.ID
-	response.TourTitle = tourObject.TourTitle
-	response.Message = "tour successfully created"
-	response.Date = tourObject.Date
-	response.Status = true
+	response := tourDto.CreateTourResponse{
+		TourId:          tourObject.ID,
+		TourTitle:       tourObject.TourTitle,
+		Message:         "Tour successfully created",
+		Date:            tourObject.Date,
+		Price:           tourObject.Price,
+		OperatorContact: tourObject.OperatorContact,
+		Status:          true,
+	}
 	return response, nil
 }
+
 func (t *TourRepositories) GetAllTours() ([]tourDto.TourObject, error) {
 	if t.DB == nil {
 		return nil, errors.New("tour DB Not Initialized")
@@ -126,10 +130,11 @@ func (t *TourRepositories) UpdateTour(id string, updatedObject tourDto.TourObjec
 	return tour, nil
 }
 
-func (t *TourRepositories) GetToursByType(tourType string) ([]tourDto.TourObject, error) {
+func (t *TourRepositories) GetToursByType(tourType tourDto.TourType) ([]tourDto.TourObject, error) {
 	if t.DB == nil {
-		return nil, errors.New("tour DB Not Initialized")
+		return nil, errors.New("tour DB not initialized")
 	}
+
 	var tours []tourDto.TourObject
 	if err := t.DB.Where("category = ?", tourType).Find(&tours).Error; err != nil {
 		return nil, fmt.Errorf("exception getting tours by type: %w", err)

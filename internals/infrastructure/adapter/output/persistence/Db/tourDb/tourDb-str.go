@@ -1,7 +1,7 @@
 package tourDb
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/tour/tourRepo"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/tourRepo"
 	"github.com/jinzhu/gorm"
 )
 

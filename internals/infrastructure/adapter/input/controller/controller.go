@@ -1,7 +1,7 @@
 package controller
 
 import (
-	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/input/touristUseCaseInputPort"
+	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCaseInputPort"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
 	"github.com/gin-gonic/gin"
 	"net/http"

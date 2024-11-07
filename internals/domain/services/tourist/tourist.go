@@ -1,22 +1,23 @@
-package services
+package tourist
 
 import (
 	"fmt"
-	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/input/touristUseCaseInputPort"
-	port "github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/keycloakOutput.port"
-	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/repo"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCaseInputPort"
+	port "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/touristRepo"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/exception"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
 	"net/http"
 )
 
 type TouristUseCase struct {
-	Db                 repo.DBStore
+	Db                 touristRepo.DBStore
 	keycloakOutPutPort port.KeycloakOutPutPort
 }
 
-func NewTourist(db repo.DBStore, keycloakAdapter port.KeycloakOutPutPort) touristUseCaseInputPort.TouristUseCase {
+func NewTourist(db touristRepo.DBStore, keycloakAdapter port.KeycloakOutPutPort) touristUseCaseInputPort.TouristUseCase {
 	return &TouristUseCase{
 		Db:                 db,
 		keycloakOutPutPort: keycloakAdapter,
@@ -24,7 +25,7 @@ func NewTourist(db repo.DBStore, keycloakAdapter port.KeycloakOutPutPort) touris
 }
 
 func (t *TouristUseCase) RegisterTouristUseCase(request *model.RegisterRequest) (*model.RegisterResponse, error) {
-	if err := ValidateRequest(request); err != nil {
+	if err := services.ValidateRequest(request); err != nil {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrValidatingRequest,
 			StatusCode:   http.StatusBadRequest,
@@ -72,7 +73,7 @@ func (t *TouristUseCase) RegisterTouristUseCase(request *model.RegisterRequest) 
 }
 
 func (t *TouristUseCase) Login(details model.LoginRequest) (*model.LoginResponse, error) {
-	if err := ValidateRequest(details); err != nil {
+	if err := services.ValidateRequest(details); err != nil {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrValidatingRequest,
 			StatusCode:   http.StatusBadRequest,

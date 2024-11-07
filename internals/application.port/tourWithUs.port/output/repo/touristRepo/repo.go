@@ -1,4 +1,4 @@
-package repo
+package touristRepo
 
 import (
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"

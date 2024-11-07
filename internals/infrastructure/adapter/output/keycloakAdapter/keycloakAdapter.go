@@ -3,7 +3,7 @@ package keycloakAdapter
 import (
 	"errors"
 	"fmt"
-	keycloakoutputport "github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/keycloakOutput.port"
+	keycloakoutputport "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/config"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	"github.com/go-playground/validator/v10"

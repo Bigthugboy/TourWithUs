@@ -2,10 +2,10 @@ package domain
 
 import (
 	"errors"
-	domain2 "github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/keycloakOutput.port/internals/test/domain"
-	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/repo/internals/test/domain"
+	domain2 "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port/internals/test/domain"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/internals/test/domain"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/services/tourist"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 
 	"github.com/golang/mock/gomock"
@@ -29,7 +29,7 @@ func TestRegisterTouristUseCase_Success(t *testing.T) {
 		Username:  "johndoe",
 	}, int64(123), nil)
 
-	usecase := services.NewTourist(mockDB, mockKeycloakAdapter)
+	usecase := tourist.NewTourist(mockDB, mockKeycloakAdapter)
 
 	request := &model.RegisterRequest{
 		Email:     "test@example.com",
@@ -54,7 +54,7 @@ func TestRegisterTouristUseCase_UserAlreadyExists(t *testing.T) {
 	mockDB := domain.NewMockDBStore(ctrl)
 	mockKeycloakAdapter := domain2.NewMockKeycloakOutPutPort(ctrl)
 	mockDB.EXPECT().SearchTouristByEmail("test@example.com").Return(touristDto.TouristObject{}, nil)
-	useCase := services.NewTourist(mockDB, mockKeycloakAdapter)
+	useCase := tourist.NewTourist(mockDB, mockKeycloakAdapter)
 
 	request := &model.RegisterRequest{
 		Email:     "test@example.com",

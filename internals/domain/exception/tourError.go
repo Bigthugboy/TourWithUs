@@ -19,6 +19,9 @@ const (
 	ErrFailTOLoginUser          = "Failed to login user"
 	ErrUserNotFound             = "User not found"
 	ErrFailToLoginUser          = "Failed to login user"
+	ErrFailToCreateTour         = "Failed to create tour"
+	ErrFailToGetTour            = "Failed to get tour"
+	ErrFailToDeleteTour         = "Failed to delete tour"
 )
 
 type TourWithUsError struct {

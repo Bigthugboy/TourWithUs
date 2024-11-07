@@ -10,7 +10,7 @@ type TourRepository interface {
 	GetToursByLocation(location string) ([]tourDto.TourObject, error)
 	GetToursByDateRange(startDate, endDate string) ([]tourDto.TourObject, error)
 	GetToursByPriceRange(minPrice, maxPrice float64) ([]tourDto.TourObject, error)
-	GetToursByType(tourType string) ([]tourDto.TourObject, error)
+	GetToursByType(tourType tourDto.TourType) ([]tourDto.TourObject, error)
 	SearchTours(query string) ([]tourDto.TourObject, error)
 	DeleteTour(id string) error
 	UpdateTour(id string, updatedObject tourDto.TourObject) (tourDto.TourObject, error)

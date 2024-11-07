@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/services/tourist"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/input/controller"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/input/routes"
@@ -25,7 +25,7 @@ func main() {
 	db.AutoMigrate(&touristDto.TouristObject{})
 	database := query.NewTourDB(db)
 	adapter := keycloakAdapter.KeycloakAdapter{}
-	touristService := services.NewTourist(database, &adapter)
+	touristService := tourist.NewTourist(database, &adapter)
 
 	touristController := controller.NewTouristController(touristService)
 
