@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/input/controller"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/input/routes"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/output/keycloakAdapter"
@@ -22,7 +22,7 @@ func main() {
 	defer db.Close()
 	logrus.Info("---------> STARTED TOUR WITH US SERVER <--------------")
 
-	db.AutoMigrate(&dto.TouristObject{})
+	db.AutoMigrate(&touristDto.TouristObject{})
 	database := query.NewTourDB(db)
 	adapter := keycloakAdapter.KeycloakAdapter{}
 	touristService := services.NewTourist(database, &adapter)

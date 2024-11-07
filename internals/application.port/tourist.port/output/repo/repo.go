@@ -1,14 +1,14 @@
 package repo
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 )
 
 type DBStore interface {
-	InsertTourist(user dto.TouristObject) (*dto.TouristObject, int64, error)
-	SearchTouristByEmail(email string) (dto.TouristObject, error)
-	GetTouristByID(userID string) (dto.TouristObject, error)
-	GetAllTourists() ([]dto.TouristObject, error)
+	InsertTourist(user touristDto.TouristObject) (*touristDto.TouristObject, int64, error)
+	SearchTouristByEmail(email string) (touristDto.TouristObject, error)
+	GetTouristByID(userID string) (touristDto.TouristObject, error)
+	GetAllTourists() ([]touristDto.TouristObject, error)
 	DeleteTouristByID(userID string) error
 	DeleteTouristByEmail(email string) error
 }

@@ -2,11 +2,11 @@ package domainMapper
 
 import (
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 )
 
-func MapRegisterRequestToTouristDetails(details *model.RegisterRequest) dto.TouristDetails {
-	return dto.TouristDetails{
+func MapRegisterRequestToTouristDetails(details *model.RegisterRequest) touristDto.TouristDetails {
+	return touristDto.TouristDetails{
 		FirstName:  details.FirstName,
 		LastName:   details.LastName,
 		Email:      details.Email,
@@ -17,8 +17,8 @@ func MapRegisterRequestToTouristDetails(details *model.RegisterRequest) dto.Tour
 
 }
 
-func MapRegisterRequestToTouristObject(request *model.RegisterRequest) dto.TouristObject {
-	return dto.TouristObject{
+func MapRegisterRequestToTouristObject(request *model.RegisterRequest) touristDto.TouristObject {
+	return touristDto.TouristObject{
 		FirstName:  request.FirstName,
 		LastName:   request.LastName,
 		Email:      request.Email,
@@ -28,8 +28,8 @@ func MapRegisterRequestToTouristObject(request *model.RegisterRequest) dto.Touri
 	}
 }
 
-func MapLoginRequestToTouristDetails(details *model.LoginRequest) dto.RetrieveTourist {
-	return dto.RetrieveTourist{
+func MapLoginRequestToTouristDetails(details *model.LoginRequest) touristDto.RetrieveTourist {
+	return touristDto.RetrieveTourist{
 		Email:    details.Email,
 		Password: details.Password,
 	}

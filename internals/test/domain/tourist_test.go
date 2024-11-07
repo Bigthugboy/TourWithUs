@@ -6,7 +6,7 @@ import (
 	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/repo/internals/test/domain"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +20,9 @@ func TestRegisterTouristUseCase_Success(t *testing.T) {
 	mockDB := domain.NewMockDBStore(ctrl)
 	mockKeycloakAdapter := domain2.NewMockKeycloakOutPutPort(ctrl)
 
-	mockDB.EXPECT().SearchTouristByEmail("test@example.com").Return(dto.TouristObject{}, errors.New("not found"))
+	mockDB.EXPECT().SearchTouristByEmail("test@example.com").Return(touristDto.TouristObject{}, errors.New("not found"))
 	mockKeycloakAdapter.EXPECT().SaveTourist(gomock.Any()).Return("User created successfully", nil)
-	mockDB.EXPECT().InsertTourist(gomock.Any()).Return(&dto.TouristObject{
+	mockDB.EXPECT().InsertTourist(gomock.Any()).Return(&touristDto.TouristObject{
 		FirstName: "John",
 		LastName:  "Doe",
 		Email:     "test@example.com",
@@ -53,7 +53,7 @@ func TestRegisterTouristUseCase_UserAlreadyExists(t *testing.T) {
 
 	mockDB := domain.NewMockDBStore(ctrl)
 	mockKeycloakAdapter := domain2.NewMockKeycloakOutPutPort(ctrl)
-	mockDB.EXPECT().SearchTouristByEmail("test@example.com").Return(dto.TouristObject{}, nil)
+	mockDB.EXPECT().SearchTouristByEmail("test@example.com").Return(touristDto.TouristObject{}, nil)
 	useCase := services.NewTourist(mockDB, mockKeycloakAdapter)
 
 	request := &model.RegisterRequest{

@@ -2,7 +2,7 @@ package adapter
 
 import (
 	config2 "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/config"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/output/keycloakAdapter"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -12,8 +12,8 @@ import (
 
 var config = config2.Keycloak{}
 
-func touristDetails() dto.TouristDetails {
-	return dto.TouristDetails{
+func touristDetails() touristDto.TouristDetails {
+	return touristDto.TouristDetails{
 		FirstName: "paul",
 		LastName:  "scott",
 		Email:     "scott12345679@test.com",

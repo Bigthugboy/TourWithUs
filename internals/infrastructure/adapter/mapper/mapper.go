@@ -1,11 +1,11 @@
 package mapper
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 )
 
-func MapModelToObject(tourist *dto.TouristDetails) dto.TouristObject {
-	return dto.TouristObject{
+func MapModelToObject(tourist *touristDto.TouristDetails) touristDto.TouristObject {
+	return touristDto.TouristObject{
 		FirstName:  tourist.FirstName,
 		LastName:   tourist.LastName,
 		Email:      tourist.Email,
@@ -15,11 +15,11 @@ func MapModelToObject(tourist *dto.TouristDetails) dto.TouristObject {
 	}
 }
 
-func MapObjectToModel(obj *dto.TouristObject) *dto.TouristDetails {
+func MapObjectToModel(obj *touristDto.TouristObject) *touristDto.TouristDetails {
 	if obj == nil {
-		return &dto.TouristDetails{}
+		return &touristDto.TouristDetails{}
 	}
-	return &dto.TouristDetails{
+	return &touristDto.TouristDetails{
 		FirstName:  obj.FirstName,
 		LastName:   obj.LastName,
 		Email:      obj.Email,

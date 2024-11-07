@@ -1,10 +1,10 @@
 package keycloakOutput_port
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 )
 
 type KeycloakOutPutPort interface {
-	SaveTourist(tourist *dto.TouristDetails) (string, error)
-	RetrieveTourist(details dto.RetrieveTourist) (string, error)
+	SaveTourist(tourist *touristDto.TouristDetails) (string, error)
+	RetrieveTourist(details touristDto.RetrieveTourist) (string, error)
 }

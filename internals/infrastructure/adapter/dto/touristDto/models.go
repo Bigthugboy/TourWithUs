@@ -1,4 +1,4 @@
-package dto
+package touristDto
 
 import (
 	"github.com/jinzhu/gorm"

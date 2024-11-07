@@ -5,9 +5,9 @@
 package domain
 
 import (
+	dto "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	reflect "reflect"
 
-	dto "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
 	gomock "github.com/golang/mock/gomock"
 )
 

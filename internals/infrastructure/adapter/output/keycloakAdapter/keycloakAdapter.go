@@ -5,7 +5,7 @@ import (
 	"fmt"
 	keycloakoutputport "github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/keycloakOutput.port"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/config"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 	"github.com/go-playground/validator/v10"
 	"strings"
 )
@@ -19,7 +19,7 @@ func NewKeycloakAdapter() keycloakoutputport.KeycloakOutPutPort {
 	return &KeycloakAdapter{}
 }
 
-func (s *KeycloakAdapter) SaveTourist(details *dto.TouristDetails) (string, error) {
+func (s *KeycloakAdapter) SaveTourist(details *touristDto.TouristDetails) (string, error) {
 	if err := ValidateRequest(details); err != nil {
 		return "", fmt.Errorf("validation exception: %w", err)
 	}
@@ -45,7 +45,7 @@ func (s *KeycloakAdapter) SaveTourist(details *dto.TouristDetails) (string, erro
 	return result, nil
 }
 
-func (s *KeycloakAdapter) RetrieveTourist(details dto.RetrieveTourist) (string, error) {
+func (s *KeycloakAdapter) RetrieveTourist(details touristDto.RetrieveTourist) (string, error) {
 	Username := details.Email
 	Password := details.Password
 
@@ -56,7 +56,7 @@ func (s *KeycloakAdapter) RetrieveTourist(details dto.RetrieveTourist) (string, 
 	return result, nil
 }
 
-func ValidateRequest(details *dto.TouristDetails) error {
+func ValidateRequest(details *touristDto.TouristDetails) error {
 	if details == nil {
 		return errors.New("invalid request: details cannot be nil")
 	}
