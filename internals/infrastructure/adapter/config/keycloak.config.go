@@ -2,13 +2,12 @@ package config
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -16,8 +15,6 @@ import (
 	"sync"
 	"time"
 )
-
-var secretKey = []byte("404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970")
 
 type Keycloak struct {
 	AuthKeyMutex sync.Mutex
@@ -39,23 +36,23 @@ type TokenRes struct {
 	NotBeforePolicy  int    `json:"not-before-policy"`
 	Scope            string `json:"scope"`
 }
-
+type Credentials struct {
+	Type      string `json:"type"`
+	Value     string `json:"value"`
+	Temporary bool   `json:"temporary"`
+}
 type RegisterTouristPayload struct {
-	Username      string `json:"username"`
-	Enabled       bool   `json:"enabled"`
-	FirstName     string `json:"firstName"`
-	LastName      string `json:"lastName"`
-	Email         string `json:"email"`
-	EmailVerified bool   `json:"emailVerified"`
-	Password      string `json:"password"`
-	Credentials   []struct {
-		Type      string `json:"type"`
-		Value     string `json:"value"`
-		Temporary bool   `json:"temporary"`
-	} `json:"credentials"`
+	Username      string            `json:"username"`
+	FirstName     string            `json:"firstName"`
+	LastName      string            `json:"lastName"`
+	Email         string            `json:"email"`
+	Enabled       bool              `json:"enabled"`
+	EmailVerified bool              `json:"emailVerified"`
+	Credentials   []Credentials     `json:"credentials"`
+	Attributes    map[string]string `json:"attributes,omitempty"`
 }
 
-func GenerateToken(payload Payload) (*TokenRes, error) {
+func (k *Keycloak) GenerateToken(payload Payload) (*TokenRes, error) {
 	form := url.Values{
 		"client_id":     {payload.ClientId},
 		"client_secret": {payload.ClientSecret},
@@ -91,8 +88,6 @@ func GenerateToken(payload Payload) (*TokenRes, error) {
 		log.Println("Error decoding response: ", err)
 		return nil, err
 	}
-
-	k := Keycloak{}
 	k.AuthKeyMutex.Lock()
 	k.BearerToken = tokenResponse.AccessToken
 	k.AuthKeyMutex.Unlock()
@@ -101,40 +96,28 @@ func GenerateToken(payload Payload) (*TokenRes, error) {
 
 }
 
-func Login(payload Payload) (*TokenRes, error) {
-	ctx := context.Background()
-	logrus.Info("login user ")
-	var response TokenRes
-	err := PostData(ctx, "http://localhost:8080/realms/TourWithUs/protocol/openid-connect/token", payload, &response)
-	if err != nil {
-		logrus.WithError(err).Error("Error creating request")
-		return nil, err
+func SaveTouristOnKeycloak(regPayload RegisterTouristPayload) (string, error) {
+	k := Keycloak{}
+	if err := k.ensureValidToken(); err != nil {
+		return "", err
 	}
-	return &response, nil
-}
-
-func SaveTourist(regPayload RegisterTouristPayload) (string, error) {
-
-	kCreatePayload := RegisterTouristPayload{
-		Username:  regPayload.Username,
-		FirstName: regPayload.FirstName,
-		LastName:  regPayload.LastName,
-		Email:     regPayload.Email,
-		Enabled:   true,
-		Credentials: []struct {
-			Type      string `json:"type"`
-			Value     string `json:"value"`
-			Temporary bool   `json:"temporary"`
-		}{
+	registerReq := RegisterTouristPayload{
+		Username:      regPayload.Username,
+		FirstName:     regPayload.FirstName,
+		LastName:      regPayload.LastName,
+		Email:         regPayload.Email,
+		Enabled:       true,
+		EmailVerified: true,
+		Credentials: []Credentials{
 			{
 				Type:      "password",
-				Value:     regPayload.Password,
+				Value:     regPayload.Credentials[0].Value,
 				Temporary: false,
 			},
 		},
 	}
-
-	jsonData, err := json.Marshal(kCreatePayload)
+	log.Println("payload", regPayload)
+	jsonData, err := json.Marshal(registerReq)
 	if err != nil {
 		logrus.WithError(err).Error("Error marshaling JSON")
 		return "", err
@@ -144,17 +127,24 @@ func SaveTourist(regPayload RegisterTouristPayload) (string, error) {
 		logrus.WithError(err).Error("Error creating HTTP request")
 		return "", err
 	}
-	k := Keycloak{}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", "Bearer "+k.BearerToken)
 
-	client := &http.Client{Timeout: 10 * time.Second}
+	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		logrus.WithError(err).Error("Error performing HTTP request")
 		return "", err
 	}
 	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		logrus.WithError(err).Error("Error reading response body")
+		return "", err
+	}
+	logrus.Errorf("OK HTTP status: %d, response: %s", resp.StatusCode, body)
+
+	log.Println("response value{}", resp)
 
 	if resp.StatusCode != http.StatusCreated {
 		logrus.Errorf("Non-OK HTTP status: %d", resp.StatusCode)
@@ -162,7 +152,57 @@ func SaveTourist(regPayload RegisterTouristPayload) (string, error) {
 	}
 	return "User created successfully", nil
 }
+func LoginUser(username, password string) (string, error) {
 
+	endpoint := "http://localhost:8080/realms/TourWithUs/protocol/openid-connect/token"
+
+	payload := map[string]string{
+		"client_id":     "tour",
+		"grant_type":    "password",
+		"username":      username,
+		"password":      password,
+		"client_secret": "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk",
+	}
+
+	form := url.Values{}
+	for key, value := range payload {
+		form.Add(key, value)
+	}
+
+	req, err := http.NewRequest("POST", endpoint, strings.NewReader(form.Encode()))
+	if err != nil {
+		return "", fmt.Errorf("failed to create login request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("login request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response body: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("login failed: %s", body)
+	}
+
+	var result map[string]interface{}
+	if err := json.Unmarshal(body, &result); err != nil {
+		return "", fmt.Errorf("failed to parse response: %v", err)
+	}
+
+	token, ok := result["access_token"].(string)
+	if !ok {
+		return "", fmt.Errorf("access token not found in response")
+	}
+	log.Println("token", token)
+	return token, nil
+}
 func ValidateToken(token string) (bool, error) {
 	keycloakPublicKey, err := FetchKeycloakPublicKey()
 	if err != nil {
@@ -194,7 +234,7 @@ func FetchKeycloakPublicKey() (string, error) {
 		log.Println("non-200 response: ", resp.StatusCode)
 		return "", errors.New("something went wrong while fetching your key from keycloak")
 	}
-	_, err = ioutil.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -202,38 +242,58 @@ func FetchKeycloakPublicKey() (string, error) {
 	return keycloakPublicKey, nil
 }
 
-func PostData(ctx context.Context, url string, requestData interface{}, response interface{}) error {
-	data, err := json.Marshal(requestData)
+func isTokenExpired(tokenString string) (bool, error) {
+	const bufferMinutes = 10
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
 	if err != nil {
-		logrus.WithError(err).Error("failed to marshal request")
-		return err
+		logrus.WithError(err).Error("Failed to parse token")
+		return false, fmt.Errorf("failed to parse token: %w", err)
 	}
-	request, err := http.NewRequestWithContext(ctx, "POST", url, strings.NewReader(string(data)))
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return false, errors.New("could not parse claims")
+	}
+	exp, ok := claims["exp"].(float64)
+	if !ok {
+		return false, errors.New("'exp' claim missing or invalid in token")
+	}
+	expirationTime := time.Unix(int64(exp), 0)
+	bufferDuration := time.Duration(bufferMinutes) * time.Minute
+	isExpiringSoon := time.Now().After(expirationTime.Add(-bufferDuration))
+	return isExpiringSoon, nil
+}
+
+func (k *Keycloak) ensureValidToken() error {
+	if k.BearerToken == "" {
+		logrus.Info("BearerToken is empty; refreshing token.")
+		return k.refreshToken()
+	}
+	isExpired, err := isTokenExpired(k.BearerToken)
 	if err != nil {
-		logrus.WithError(err).Error("failed to create request")
+		logrus.WithError(err).Error("Failed to verify token expiration")
 		return err
 	}
-	request.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	client := &http.Client{}
-	resp, err := client.Do(request)
+	if isExpired {
+		logrus.Info("BearerToken is expired; refreshing token.")
+		return k.refreshToken()
+	}
+	logrus.Info("BearerToken is valid.")
+	return nil
+}
+
+func (k *Keycloak) refreshToken() error {
+	payload := Payload{
+		ClientId:     "tour",
+		ClientSecret: "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk",
+		GrantType:    "client_credentials",
+		Username:     "admin",
+		Password:     "admin",
+	}
+	_, err := k.GenerateToken(payload)
 	if err != nil {
-		logrus.WithError(err).Error("failed to send request")
-		return err
+		logrus.WithError(err).Error("Error refreshing token")
+		return fmt.Errorf("exception refreshing token: %w", err)
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		bodyBytes, err := ioutil.ReadAll(resp.Body)
-		logrus.WithFields(logrus.Fields{
-			"status_code": resp.StatusCode,
-			"response":    string(bodyBytes),
-		}).Error("Received non-200 response")
-		return err
-	}
-	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
-		logrus.WithFields(logrus.Fields{
-			"error": err.Error(),
-		}).Error("Failed to decode response")
-		return err
-	}
+	logrus.Info("BearerToken refreshed successfully.")
 	return nil
 }

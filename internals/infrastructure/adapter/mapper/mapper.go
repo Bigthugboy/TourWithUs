@@ -1,12 +1,11 @@
 package mapper
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/output/persistence/Db/query"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
 )
 
-func MapModelToObject(tourist *model.TouristDetails) query.TouristObject {
-	return query.TouristObject{
+func MapModelToObject(tourist *dto.TouristDetails) dto.TouristObject {
+	return dto.TouristObject{
 		FirstName:  tourist.FirstName,
 		LastName:   tourist.LastName,
 		Email:      tourist.Email,
@@ -16,8 +15,11 @@ func MapModelToObject(tourist *model.TouristDetails) query.TouristObject {
 	}
 }
 
-func MapObjectToModel(obj *query.TouristObject) *model.TouristDetails {
-	return &model.TouristDetails{
+func MapObjectToModel(obj *dto.TouristObject) *dto.TouristDetails {
+	if obj == nil {
+		return &dto.TouristDetails{}
+	}
+	return &dto.TouristDetails{
 		FirstName:  obj.FirstName,
 		LastName:   obj.LastName,
 		Email:      obj.Email,

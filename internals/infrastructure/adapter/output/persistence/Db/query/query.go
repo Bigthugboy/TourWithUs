@@ -3,96 +3,88 @@ package query
 import (
 	"errors"
 	"fmt"
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/mapper"
-
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
-	"gorm.io/gorm"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto"
+	"github.com/jinzhu/gorm"
 )
 
-type TouristObject struct {
-	gorm.Model
-	FirstName  string `json:"firstName"`
-	LastName   string `json:"lastName"`
-	Email      string `json:"email"`
-	Password   string `json:"password"`
-	ProfilePic string `json:"profilePic"`
-	Username   string `json:"username"`
-}
-
-// CreateTourist maps model.TouristDetails to TouristObject and inserts into the database.
-func (t *TourDB) CreateTourist(tourist *model.TouristDetails) (*model.TouristDetails, error) {
-	touristObj := mapper.MapModelToObject(tourist)
-	if err := t.DB.Create(&touristObj).Error; err != nil {
-		return nil, err
-	}
-	return mapper.MapObjectToModel(&touristObj), nil
-}
-
-// InsertTourist inserts a tourist into the database.
-func (t *TourDB) InsertTourist(tourist model.TouristDetails) (int64, error) {
+func (t *TourDB) InsertTourist(tourist dto.TouristObject) (*dto.TouristObject, int64, error) {
 	if t.DB == nil {
-		return -1, fmt.Errorf("database connection is not initialized")
+		return nil, -1, fmt.Errorf("database connection is not initialized")
 	}
-	var existingUser TouristObject
-	if err := t.DB.Where("email = ?", tourist.Email).First(&existingUser).Error; err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		return -1, err
+	if err := t.DB.Create(&tourist).Error; err != nil {
+		return nil, -1, fmt.Errorf("exception inserting new tourist: %w", err)
 	}
-	if existingUser.ID != 0 {
-		return -1, fmt.Errorf("user with email '%s' already exists", tourist.Email)
-	}
-	touristObj := mapper.MapModelToObject(&tourist)
-	result := t.DB.Create(&touristObj)
-	if err := result.Error; err != nil {
-		return -1, err
-	}
-	return result.RowsAffected, nil
+	return &tourist, 1, nil
 }
 
-func (t *TourDB) SearchTouristByEmail(email string) (model.TouristDetails, error) {
+// SearchTouristByEmail finds a tourist by email.
+func (t *TourDB) SearchTouristByEmail(email string) (dto.TouristObject, error) {
 	if t.DB == nil {
-		return model.TouristDetails{}, fmt.Errorf("database connection is not initialized")
+		return dto.TouristObject{}, fmt.Errorf("database connection is not initialized")
 	}
-	var user TouristObject
-	if err := t.DB.Where("email = ?", email).First(&user).Error; err != nil {
+	var user dto.TouristObject
+	//err := t.DB.Where("email = ?", email).First(&user).Error
+	//err := t.DB.Select("id", "first_name", "last_name", "email", "password", "profile_pic", "username").Where("email = ?", email).First(&user).Error
+	err := t.DB.Select("id, first_name, last_name, email, password, profile_pic, username").
+		Where("email = ?", email).
+		First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return dto.TouristObject{}, err
+	} else if err != nil {
+		return dto.TouristObject{}, fmt.Errorf("error querying database: %w", err)
+	}
+	return user, nil
+}
+
+// GetTouristByID retrieves a tourist by ID.
+func (t *TourDB) GetTouristByID(userID string) (dto.TouristObject, error) {
+	if t.DB == nil {
+		return dto.TouristObject{}, fmt.Errorf("database connection is not initialized")
+	}
+	var user dto.TouristObject
+	err := t.DB.Preload("Wallet").First(&user, userID).Error
+	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.TouristDetails{}, nil
+			return dto.TouristObject{}, fmt.Errorf("tourist not found")
 		}
-		return model.TouristDetails{}, err
+		return dto.TouristObject{}, fmt.Errorf("failed to find user: %w", err)
 	}
-
-	return *mapper.MapObjectToModel(&user), nil
+	return user, nil
 }
 
-func (t *TourDB) GetTouristByID(userID string) (model.TouristDetails, error) {
-	var user TouristObject
-	if err := t.DB.Preload("Wallet").First(&user, userID).Error; err != nil {
-		return model.TouristDetails{}, fmt.Errorf("failed to find user: %v", err)
+// GetAllTourists retrieves all tourists from the database.
+func (t *TourDB) GetAllTourists() ([]dto.TouristObject, error) {
+	if t.DB == nil {
+		return nil, fmt.Errorf("database connection is not initialized")
 	}
-	return *mapper.MapObjectToModel(&user), nil
+	var users []dto.TouristObject
+	err := t.DB.Find(&users).Error
+	if err != nil {
+		return nil, fmt.Errorf("failed to retrieve tourists: %w", err)
+	}
+	return users, nil
 }
 
-func (t *TourDB) GetAllTourists() ([]model.TouristDetails, error) {
-	var users []TouristObject
-	if err := t.DB.Find(&users).Error; err != nil {
-		return nil, err
-	}
-	var tourists []model.TouristDetails
-	for _, user := range users {
-		tourists = append(tourists, *mapper.MapObjectToModel(&user))
-	}
-	return tourists, nil
-}
-
+// DeleteTouristByID deletes a tourist by their ID.
 func (t *TourDB) DeleteTouristByID(userID string) error {
-	if err := t.DB.Delete(&TouristObject{}, userID).Error; err != nil {
-		return err
+	if t.DB == nil {
+		return fmt.Errorf("database connection is not initialized")
+	}
+	err := t.DB.Delete(&dto.TouristObject{}, userID).Error
+	if err != nil {
+		return fmt.Errorf("failed to delete tourist by ID: %w", err)
 	}
 	return nil
 }
 
+// DeleteTouristByEmail deletes a tourist by their email.
 func (t *TourDB) DeleteTouristByEmail(email string) error {
-	if err := t.DB.Where("email = ?", email).Delete(&TouristObject{}).Error; err != nil {
-		return err
+	if t.DB == nil {
+		return fmt.Errorf("database connection is not initialized")
+	}
+	err := t.DB.Where("email = ?", email).Delete(&dto.TouristObject{}).Error
+	if err != nil {
+		return fmt.Errorf("failed to delete tourist by email: %w", err)
 	}
 	return nil
 }

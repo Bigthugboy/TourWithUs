@@ -1,7 +1,7 @@
 package query
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/output/persistence/Db/repo"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourist.port/output/repo"
 	"github.com/jinzhu/gorm"
 )
 
