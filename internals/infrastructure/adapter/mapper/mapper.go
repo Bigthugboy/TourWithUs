@@ -1,6 +1,7 @@
 package mapper
 
 import (
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/config"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 )
 
@@ -26,5 +27,12 @@ func MapObjectToModel(obj *touristDto.TouristObject) *touristDto.TouristDetails 
 		Password:   obj.Password,
 		ProfilePic: obj.ProfilePic,
 		Username:   obj.Username,
+	}
+}
+
+func MapRetrieveDetailsToKeycloakLoginCredentials(details *touristDto.RetrieveTourist) config.LoginCredentials {
+	return config.LoginCredentials{
+		Username: details.Email,
+		Password: details.Password,
 	}
 }

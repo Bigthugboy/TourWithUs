@@ -30,6 +30,32 @@ func mockServer() *httptest.Server {
 	return httptest.NewServer(handler)
 }
 
+func details() config2.RegisterTouristPayload {
+	return config2.RegisterTouristPayload{
+		Username:      "shakur",
+		FirstName:     "deji",
+		LastName:      "ayo",
+		Email:         "deji2444444@gmail.com",
+		Enabled:       true,
+		EmailVerified: false,
+		Credentials: []config2.Credentials{
+			{
+				Type:      "password",
+				Value:     "damilola",
+				Temporary: false,
+			},
+		},
+		Attributes: map[string]string{
+			"customAttribute": "test_value",
+		},
+	}
+}
+func Login() config2.LoginCredentials {
+	return config2.LoginCredentials{
+		Username: "deji2444444@gmail.com",
+		Password: "damilola",
+	}
+}
 func TestGenerateToken(t *testing.T) {
 	client_id := "tour"
 	client_secret := "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk"
@@ -53,28 +79,103 @@ func TestGenerateToken(t *testing.T) {
 }
 
 func TestSavedTourist(t *testing.T) {
-	kCreatePayload := config2.RegisterTouristPayload{
-		Username:      "shakur",
-		FirstName:     "deji",
-		LastName:      "ayo",
-		Email:         "deji2444444@gmail.com",
-		Enabled:       true,
-		EmailVerified: false,
-		Credentials: []config2.Credentials{
-			{
-				Type:      "password",
-				Value:     "damilola",
-				Temporary: false,
-			},
-		},
-		Attributes: map[string]string{
-			"customAttribute": "test_value",
-		},
-	}
-	res, err := config2.SaveTouristOnKeycloak(kCreatePayload)
+	res, err := config2.SaveTouristOnKeycloak(details())
 	if err != nil {
 		t.Error(err)
 		logrus.Info(err.Error())
 	}
 	fmt.Println(res)
+}
+
+func TestSaveTourist_shouldThrowError_DuplicatedUser(t *testing.T) {
+	res, err := config2.SaveTouristOnKeycloak(details())
+	assert.Error(t, err)
+	assert.Empty(t, res)
+}
+
+func TestSaveTourist_shouldThrowError_InvalidUser(t *testing.T) {
+	req := details()
+	req.Email = ""
+	logrus.Info("------->", req)
+	res, err := config2.SaveTouristOnKeycloak(req)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+}
+
+func TestSaveTourist_shouldThrowError_invalidDetails(t *testing.T) {
+	req := details()
+	req.Username = ""
+	_, err := config2.SaveTouristOnKeycloak(req)
+	logrus.Info("err is ", err)
+	assert.Error(t, err)
+
+	req = details()
+	req.Email = ""
+	_, err = config2.SaveTouristOnKeycloak(req)
+	logrus.Info("err is ", err)
+	assert.Error(t, err)
+
+	req = details()
+	req.Email = "hgfnknspidgjg"
+	_, err = config2.SaveTouristOnKeycloak(req)
+	logrus.Info("err is ", err)
+	assert.Error(t, err)
+}
+
+func TestSaveTourist_shouldThrowError_InvalidPassword(t *testing.T) {
+	req := details()
+	req.Email = "thugboy@gmail.com"
+	req.Credentials = []config2.Credentials{
+		{
+			Type:      "password",
+			Value:     "",
+			Temporary: false,
+		},
+	}
+	_, err := config2.SaveTouristOnKeycloak(req)
+	assert.Error(t, err)
+}
+
+func TestSaveTourist_shouldThrowError_InvalidPasswordLength(t *testing.T) {
+	req := details()
+	req.Email = "thugboy@gmail.com"
+	req.Credentials = []config2.Credentials{
+		{
+			Type:      "password",
+			Value:     "passwor",
+			Temporary: false,
+		},
+	}
+	_, err := config2.SaveTouristOnKeycloak(req)
+	assert.Error(t, err)
+}
+
+func TestLoginTourist(t *testing.T) {
+	details := Login()
+	res, err := config2.LoginUser(details)
+	assert.NoError(t, err)
+	assert.NotNil(t, res)
+}
+
+func TestLoginTourist_shouldThrowError_InvalidCredentials(t *testing.T) {
+	details := Login()
+	details.Username = ""
+	res, err := config2.LoginUser(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details.Username = "fhdmmdvjrg"
+	res, err = config2.LoginUser(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details.Password = ""
+	res, err = config2.LoginUser(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details.Password = "7459njf"
+	res, err = config2.LoginUser(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
 }

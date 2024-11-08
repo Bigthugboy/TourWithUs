@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -28,6 +29,7 @@ type Payload struct {
 	Username     string `json:"username"`
 	Password     string `json:"password"`
 }
+
 type TokenRes struct {
 	AccessToken      string `json:"access_token"`
 	ExpiresIn        int    `json:"expires_in"`
@@ -36,20 +38,27 @@ type TokenRes struct {
 	NotBeforePolicy  int    `json:"not-before-policy"`
 	Scope            string `json:"scope"`
 }
+
 type Credentials struct {
 	Type      string `json:"type"`
-	Value     string `json:"value"`
+	Value     string `json:"value" validate:"required,min=8"`
 	Temporary bool   `json:"temporary"`
 }
+
 type RegisterTouristPayload struct {
-	Username      string            `json:"username"`
-	FirstName     string            `json:"firstName"`
-	LastName      string            `json:"lastName"`
-	Email         string            `json:"email"`
+	Username      string            `json:"username" validate:"required"`
+	FirstName     string            `json:"firstName" validate:"required"`
+	LastName      string            `json:"lastName" validate:"required"`
+	Email         string            `json:"email" validate:"required,email"`
 	Enabled       bool              `json:"enabled"`
 	EmailVerified bool              `json:"emailVerified"`
 	Credentials   []Credentials     `json:"credentials"`
 	Attributes    map[string]string `json:"attributes,omitempty"`
+}
+
+type LoginCredentials struct {
+	Username string `json:"username" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
 }
 
 func (k *Keycloak) GenerateToken(payload Payload) (*TokenRes, error) {
@@ -97,6 +106,16 @@ func (k *Keycloak) GenerateToken(payload Payload) (*TokenRes, error) {
 }
 
 func SaveTouristOnKeycloak(regPayload RegisterTouristPayload) (string, error) {
+	validate := validator.New()
+	for _, credential := range regPayload.Credentials {
+		if err := validate.Struct(credential); err != nil {
+			return "", fmt.Errorf("validation failed on credentials: %w", err)
+		}
+	}
+
+	if err := validate.Struct(regPayload); err != nil {
+		return "", fmt.Errorf("validation failed: %w", err)
+	}
 	k := Keycloak{}
 	if err := k.ensureValidToken(); err != nil {
 		return "", err
@@ -152,15 +171,18 @@ func SaveTouristOnKeycloak(regPayload RegisterTouristPayload) (string, error) {
 	}
 	return "User created successfully", nil
 }
-func LoginUser(username, password string) (string, error) {
 
+func LoginUser(credentials LoginCredentials) (string, error) {
+	validate := validator.New()
+	if err := validate.Struct(credentials); err != nil {
+		return "", fmt.Errorf("validation failed on credentials: %w", err)
+	}
 	endpoint := "http://localhost:8080/realms/TourWithUs/protocol/openid-connect/token"
-
 	payload := map[string]string{
 		"client_id":     "tour",
 		"grant_type":    "password",
-		"username":      username,
-		"password":      password,
+		"username":      credentials.Username,
+		"password":      credentials.Password,
 		"client_secret": "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk",
 	}
 
@@ -203,44 +225,45 @@ func LoginUser(username, password string) (string, error) {
 	log.Println("token", token)
 	return token, nil
 }
-func ValidateToken(token string) (bool, error) {
-	keycloakPublicKey, err := FetchKeycloakPublicKey()
-	if err != nil {
-		return false, err
-	}
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(keycloakPublicKey))
-		if err != nil {
-			return nil, err
-		}
-		return publicKey, nil
-	})
-	if err != nil {
-		return false, err
-	}
-	return parsedToken.Valid, nil
-}
 
-func FetchKeycloakPublicKey() (string, error) {
-	resp, err := http.Get("http://localhost:8080/realms/TourWithUs/protocol/openid-connect/certs")
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		log.Println("non-200 response: ", resp.StatusCode)
-		return "", errors.New("something went wrong while fetching your key from keycloak")
-	}
-	_, err = io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	var keycloakPublicKey string
-	return keycloakPublicKey, nil
-}
+//func ValidateToken(token string) (bool, error) {
+//	keycloakPublicKey, err := FetchKeycloakPublicKey()
+//	if err != nil {
+//		return false, err
+//	}
+//	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+//		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+//			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+//		}
+//		publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(keycloakPublicKey))
+//		if err != nil {
+//			return nil, err
+//		}
+//		return publicKey, nil
+//	})
+//	if err != nil {
+//		return false, err
+//	}
+//	return parsedToken.Valid, nil
+//}
+//
+//func FetchKeycloakPublicKey() (string, error) {
+//	resp, err := http.Get("http://localhost:8080/realms/TourWithUs/protocol/openid-connect/certs")
+//	if err != nil {
+//		return "", err
+//	}
+//	defer resp.Body.Close()
+//	if resp.StatusCode != http.StatusOK {
+//		log.Println("non-200 response: ", resp.StatusCode)
+//		return "", errors.New("something went wrong while fetching your key from keycloak")
+//	}
+//	_, err = io.ReadAll(resp.Body)
+//	if err != nil {
+//		return "", err
+//	}
+//	var keycloakPublicKey string
+//	return keycloakPublicKey, nil
+//}
 
 func isTokenExpired(tokenString string) (bool, error) {
 	const bufferMinutes = 10

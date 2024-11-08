@@ -36,9 +36,9 @@ func (t *TouristUseCase) RegisterTouristUseCase(request *model.RegisterRequest) 
 	if err == nil {
 		return nil, fmt.Errorf("tourist with this email already exists")
 	}
-	Ktourist := domainMapper.MapRegisterRequestToTouristDetails(request)
+	KTourist := domainMapper.MapRegisterRequestToTouristDetails(request)
 
-	response, err := t.keycloakOutPutPort.SaveTourist(&Ktourist)
+	response, err := t.keycloakOutPutPort.SaveTourist(&KTourist)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrSavingUser,
@@ -89,6 +89,8 @@ func (t *TouristUseCase) Login(details model.LoginRequest) (*model.LoginResponse
 		}
 	}
 	touristDetails := domainMapper.MapLoginRequestToTouristDetails(&details)
+	touristDetails.Email = fetchedUser.Email
+	touristDetails.Password = fetchedUser.Password
 
 	_, err = t.keycloakOutPutPort.RetrieveTourist(touristDetails)
 	if err != nil {

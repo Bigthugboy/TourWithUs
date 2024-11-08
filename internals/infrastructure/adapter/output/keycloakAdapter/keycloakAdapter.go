@@ -6,6 +6,7 @@ import (
 	keycloakoutputport "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/config"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/mapper"
 	"github.com/go-playground/validator/v10"
 	"strings"
 )
@@ -46,10 +47,11 @@ func (s *KeycloakAdapter) SaveTourist(details *touristDto.TouristDetails) (strin
 }
 
 func (s *KeycloakAdapter) RetrieveTourist(details touristDto.RetrieveTourist) (string, error) {
-	Username := details.Email
-	Password := details.Password
-
-	result, err := config.LoginUser(Username, Password)
+	if err := validator.New().Struct(details); err != nil {
+		return "", fmt.Errorf("validation exception: %w", err)
+	}
+	loginDetails := mapper.MapRetrieveDetailsToKeycloakLoginCredentials(&details)
+	result, err := config.LoginUser(loginDetails)
 	if err != nil {
 		return "", fmt.Errorf("failed to retrieve tourist in KeycloakAdapter: %w", err)
 	}

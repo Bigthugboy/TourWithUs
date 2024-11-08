@@ -21,6 +21,13 @@ func touristDetails() touristDto.TouristDetails {
 		Password:  "damilola",
 	}
 }
+
+func retrieveTourist() touristDto.RetrieveTourist {
+	return touristDto.RetrieveTourist{
+		Email:    "paulAdeyemi01@gmail.com",
+		Password: "adeyemi001",
+	}
+}
 func TestSaveTourist(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	service := keycloakAdapter.NewKeycloakAdapter()
@@ -106,6 +113,45 @@ func TestSaveTourist_PasswordLength(t *testing.T) {
 	details.Password = "damilol"
 	res, err = service.SaveTourist(&details)
 	log.Println("---", err)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+}
+
+func TestRetrieveTourist(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	service := keycloakAdapter.NewKeycloakAdapter()
+	details := retrieveTourist()
+	res, err := service.RetrieveTourist(details)
+	log.Println("---", err)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, res)
+	log.Println(res)
+}
+
+func TestRetrieveTourist_ValidateTouristDetails(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	service := keycloakAdapter.NewKeycloakAdapter()
+	details := retrieveTourist()
+	details.Email = ""
+	res, err := service.RetrieveTourist(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details = retrieveTourist()
+	details.Email = "paul"
+	res, err = service.RetrieveTourist(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details = retrieveTourist()
+	details.Password = "33445"
+	res, err = service.RetrieveTourist(details)
+	assert.Error(t, err)
+	assert.Empty(t, res)
+
+	details = retrieveTourist()
+	details.Password = ""
+	res, err = service.RetrieveTourist(details)
 	assert.Error(t, err)
 	assert.Empty(t, res)
 }
