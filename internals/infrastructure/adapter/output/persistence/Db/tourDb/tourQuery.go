@@ -34,8 +34,8 @@ func (t *TourRepositories) GetAllTours() ([]tourDto.TourObject, error) {
 		return nil, fmt.Errorf("exception getting all tours: %w", err)
 	}
 	return tours, nil
-
 }
+
 func (t *TourRepositories) GetTourById(id string) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tour DB Not Initialized")
@@ -91,6 +91,7 @@ func (t *TourRepositories) GetToursByPriceRange(minPrice, maxPrice float64) ([]t
 	}
 	return tours, nil
 }
+
 func (t *TourRepositories) SearchTours(query string) ([]tourDto.TourObject, error) {
 	if t.DB == nil {
 		return nil, errors.New("tour DB Not Initialized")
@@ -115,18 +116,15 @@ func (t *TourRepositories) DeleteTour(id string) error {
 
 	return nil
 }
-
-func (t *TourRepositories) UpdateTour(id string, updatedObject tourDto.TourObject) (tourDto.TourObject, error) {
+func (t *TourRepositories) UpdateTour(id string, updatedFields map[string]interface{}) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tour DB Not Initialized")
 	}
-
 	var tour tourDto.TourObject
-	result := t.DB.Model(&tour).Where("id = ?", id).Updates(updatedObject)
+	result := t.DB.Model(&tour).Where("id = ?", id).Updates(updatedFields)
 	if err := result.Error; err != nil {
 		return tourDto.TourObject{}, fmt.Errorf("exception updating tour: %w", err)
 	}
-
 	return tour, nil
 }
 

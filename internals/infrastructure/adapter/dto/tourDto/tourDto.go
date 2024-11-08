@@ -58,5 +58,4 @@ const (
 	Historical TourType = "Historical"
 	Nature     TourType = "Nature"
 	Relaxation TourType = "Relaxation"
-	// Add more types as needed
 )

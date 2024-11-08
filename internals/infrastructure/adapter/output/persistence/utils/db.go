@@ -28,7 +28,7 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 	return db, nil
 }
 
-func TourDatabseConnection() (*gorm.DB, error) {
+func TourDatabaseConnection() (*gorm.DB, error) {
 	dbUser := "root"
 	dbPassword := "damilola"
 	dbHost := "localhost"
@@ -40,7 +40,6 @@ func TourDatabseConnection() (*gorm.DB, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
-
 	db.AutoMigrate(&touristDto.TouristDetails{})
 
 	log.Println("Database connection established.")

@@ -12,6 +12,6 @@ type TourUseCaseInputPort interface {
 	GetToursByPriceRange(minPrice, maxPrice float64) ([]model.TourDto, error)
 	GetToursByType(tourType model.TourType) ([]model.TourDto, error)
 	SearchTours(query string) ([]model.TourDto, error)
-	DeleteTour(id string) (string, error)
-	UpdateTour(id string) (*model.TourDto, error)
+	DeleteTour(id string) (*model.DeleteResponse, error)
+	UpdateTour(id string, dto model.UpdateTourDto) (*model.TourDto, error)
 }

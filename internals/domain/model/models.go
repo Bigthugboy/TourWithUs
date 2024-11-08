@@ -69,3 +69,28 @@ const (
 func (t TourType) ToDto() tourDto.TourType {
 	return tourDto.TourType(t)
 }
+
+type DeleteResponse struct {
+	Success bool
+	Message string
+}
+
+type UpdateTourDto struct {
+	OperatorID      *string `json:"operator_id"`
+	TourTitle       *string `json:"tour_title"`
+	Location        *string `json:"location"`
+	Destination     *string `json:"destination"`
+	StartTime       *string `json:"start_time"`
+	LanguageOffered *string `json:"language_offered"`
+	NumberOfTourist *string `json:"number_of_tourist"`
+	Description     *string `json:"description"`
+	TourGuide       *string `json:"tour_guide"`
+	TourOperator    *string `json:"tour_operator"`
+	OperatorContact *string `json:"operator_contact"`
+	Category        *string `json:"category"`
+	Activity        *string `json:"activity"`
+	Date            *string `json:"date"`
+	Price           *string `json:"price"`
+	TouristEmail    *string `json:"tourist_email"`
+	Availability    *bool   `json:"availability"`
+}

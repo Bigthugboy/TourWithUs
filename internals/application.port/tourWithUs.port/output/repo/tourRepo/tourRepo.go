@@ -13,5 +13,5 @@ type TourRepository interface {
 	GetToursByType(tourType tourDto.TourType) ([]tourDto.TourObject, error)
 	SearchTours(query string) ([]tourDto.TourObject, error)
 	DeleteTour(id string) error
-	UpdateTour(id string, updatedObject tourDto.TourObject) (tourDto.TourObject, error)
+	UpdateTour(id string, updatedFields map[string]interface{}) (tourDto.TourObject, error)
 }
