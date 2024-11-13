@@ -12,13 +12,11 @@ import (
 
 type Tour struct {
 	DB database.TourRepository
-	UC usecase.TourUseCaseInputPort
 }
 
-func NewTour(db database.TourRepository, uc usecase.TourUseCaseInputPort) usecase.TourUseCaseInputPort {
+func NewTour(db database.TourRepository) usecase.TourUseCaseInputPort {
 	return &Tour{
 		DB: db,
-		UC: uc,
 	}
 }
 
@@ -41,6 +39,7 @@ func (t *Tour) CreateTour(request *model.TourDto) (*model.CreateTourResponse, er
 	}
 	response := &model.CreateTourResponse{
 		Message:         "Tour Created",
+		TourTitle:       res.TourTitle,
 		TourId:          res.TourId,
 		OperatorContact: res.OperatorContact,
 		Price:           res.Price,

@@ -41,6 +41,7 @@ func MapModelTourDtoToTourDBObject(tour *model.TourDto) tourDto.TourObject {
 		TourTitle:       tour.TourTitle,
 		Location:        tour.Location,
 		StartTime:       tour.StartTime,
+		EndTime:         tour.EndTime,
 		LanguageOffered: tour.LanguageOffered,
 		NumberOfTourist: tour.NumberOfTourist,
 		Description:     tour.Description,
@@ -62,6 +63,7 @@ func MapObjectDtoToModelDto(tour *tourDto.TourObject) model.TourDto {
 		TourTitle:       tour.TourTitle,
 		Location:        tour.Location,
 		StartTime:       tour.StartTime,
+		EndTime:         tour.EndTime,
 		LanguageOffered: tour.LanguageOffered,
 		NumberOfTourist: tour.NumberOfTourist,
 		Description:     tour.Description,
@@ -98,6 +100,9 @@ func MapUpdateTourDtoToTourObject(tour *model.UpdateTourDto) map[string]interfac
 	}
 	if tour.StartTime != nil {
 		updates["StartTime"] = *tour.StartTime
+	}
+	if tour.EndTime != nil {
+		updates["EndTime"] = *tour.EndTime
 	}
 	if tour.LanguageOffered != nil {
 		updates["LanguageOffered"] = *tour.LanguageOffered

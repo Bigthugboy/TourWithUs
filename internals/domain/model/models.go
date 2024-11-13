@@ -34,6 +34,7 @@ type TourDto struct {
 	Location        string   `json:"location"`
 	Destination     string   `json:"destination"`
 	StartTime       string   `json:"start_time"`
+	EndTime         string   `json:"end_time"`
 	LanguageOffered string   `json:"language_offered"`
 	NumberOfTourist string   `json:"number_of_tourist"`
 	Description     string   `json:"description"`
@@ -51,6 +52,7 @@ type TourDto struct {
 
 type CreateTourResponse struct {
 	Message         string `json:"message"`
+	TourTitle       string `json:"tour_title"`
 	TourId          uint   `json:"tour_id"`
 	OperatorContact string `json:"operator_Contact"`
 	Price           string `json:"price"`
@@ -81,6 +83,7 @@ type UpdateTourDto struct {
 	Location        *string `json:"location"`
 	Destination     *string `json:"destination"`
 	StartTime       *string `json:"start_time"`
+	EndTime         *string `json:"end_time"`
 	LanguageOffered *string `json:"language_offered"`
 	NumberOfTourist *string `json:"number_of_tourist"`
 	Description     *string `json:"description"`

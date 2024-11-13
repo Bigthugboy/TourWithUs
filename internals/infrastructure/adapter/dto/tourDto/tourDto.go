@@ -7,6 +7,7 @@ type TourDto struct {
 	TourTitle       string `json:"tour_title"`
 	Location        string `json:"location"`
 	StartTime       string `json:"start_time"`
+	EndTime         string `json:"end_time"`
 	LanguageOffered string `json:"language_offered"`
 	NumberOfTourist string `json:"number_of_tourist"`
 	Description     string `json:"description"`
@@ -27,6 +28,7 @@ type TourObject struct {
 	TourTitle       string   `json:"tour_title"`
 	Location        string   `json:"location"`
 	StartTime       string   `json:"start_time"`
+	EndTime         string   `json:"end_time"`
 	LanguageOffered string   `json:"language_offered"`
 	NumberOfTourist string   `json:"number_of_tourist"`
 	Description     string   `json:"description"`

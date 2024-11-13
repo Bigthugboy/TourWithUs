@@ -226,44 +226,44 @@ func LoginUser(credentials LoginCredentials) (string, error) {
 	return token, nil
 }
 
-//func ValidateToken(token string) (bool, error) {
-//	keycloakPublicKey, err := FetchKeycloakPublicKey()
-//	if err != nil {
-//		return false, err
-//	}
-//	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-//		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-//			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-//		}
-//		publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(keycloakPublicKey))
-//		if err != nil {
-//			return nil, err
-//		}
-//		return publicKey, nil
-//	})
-//	if err != nil {
-//		return false, err
-//	}
-//	return parsedToken.Valid, nil
-//}
-//
-//func FetchKeycloakPublicKey() (string, error) {
-//	resp, err := http.Get("http://localhost:8080/realms/TourWithUs/protocol/openid-connect/certs")
-//	if err != nil {
-//		return "", err
-//	}
-//	defer resp.Body.Close()
-//	if resp.StatusCode != http.StatusOK {
-//		log.Println("non-200 response: ", resp.StatusCode)
-//		return "", errors.New("something went wrong while fetching your key from keycloak")
-//	}
-//	_, err = io.ReadAll(resp.Body)
-//	if err != nil {
-//		return "", err
-//	}
-//	var keycloakPublicKey string
-//	return keycloakPublicKey, nil
-//}
+func ValidateToken(token string) (bool, error) {
+	keycloakPublicKey, err := FetchKeycloakPublicKey()
+	if err != nil {
+		return false, err
+	}
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		publicKey, err := jwt.ParseRSAPublicKeyFromPEM([]byte(keycloakPublicKey))
+		if err != nil {
+			return nil, err
+		}
+		return publicKey, nil
+	})
+	if err != nil {
+		return false, err
+	}
+	return parsedToken.Valid, nil
+}
+
+func FetchKeycloakPublicKey() (string, error) {
+	resp, err := http.Get("http://localhost:8080/realms/TourWithUs/protocol/openid-connect/certs")
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		log.Println("non-200 response: ", resp.StatusCode)
+		return "", errors.New("something went wrong while fetching your key from keycloak")
+	}
+	_, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	var keycloakPublicKey string
+	return keycloakPublicKey, nil
+}
 
 func isTokenExpired(tokenString string) (bool, error) {
 	const bufferMinutes = 10

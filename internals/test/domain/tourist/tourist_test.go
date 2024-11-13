@@ -1,4 +1,4 @@
-package domain
+package tourist
 
 import (
 	"errors"
@@ -47,6 +47,7 @@ func TestRegisterTouristUseCase_Success(t *testing.T) {
 	assert.Equal(t, "Doe", response.LastName)
 	assert.Equal(t, "test@example.com", response.Email)
 }
+
 func TestRegisterTouristUseCase_UserAlreadyExists(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
