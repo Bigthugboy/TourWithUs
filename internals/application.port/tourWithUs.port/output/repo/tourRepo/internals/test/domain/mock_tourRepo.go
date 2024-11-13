@@ -6,6 +6,7 @@ package domain
 
 import (
 	reflect "reflect"
+	time "time"
 
 	tourDto "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
 	gomock "github.com/golang/mock/gomock"
@@ -109,7 +110,7 @@ func (mr *MockTourRepositoryMockRecorder) GetTourById(id interface{}) *gomock.Ca
 }
 
 // GetToursByDateRange mocks base method.
-func (m *MockTourRepository) GetToursByDateRange(startDate, endDate string) ([]tourDto.TourObject, error) {
+func (m *MockTourRepository) GetToursByDateRange(startDate, endDate time.Time) ([]tourDto.TourObject, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetToursByDateRange", startDate, endDate)
 	ret0, _ := ret[0].([]tourDto.TourObject)
@@ -184,7 +185,7 @@ func (mr *MockTourRepositoryMockRecorder) SearchTours(query interface{}) *gomock
 }
 
 // UpdateTour mocks base method.
-func (m *MockTourRepository) UpdateTour(id string, updatedFields map[string]interface{}) (tourDto.TourObject, error) {
+func (m *MockTourRepository) UpdateTour(id string, updatedFields tourDto.UpdateTourDto) (tourDto.TourObject, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateTour", id, updatedFields)
 	ret0, _ := ret[0].(tourDto.TourObject)

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
+	"time"
 )
 
 func (t *TourRepositories) CreateTour(tourObject tourDto.TourObject) (tourDto.CreateTourResponse, error) {
@@ -17,7 +18,6 @@ func (t *TourRepositories) CreateTour(tourObject tourDto.TourObject) (tourDto.Cr
 		TourId:          tourObject.ID,
 		TourTitle:       tourObject.TourTitle,
 		Message:         "Tour successfully created",
-		Date:            tourObject.Date,
 		Price:           tourObject.Price,
 		OperatorContact: tourObject.OperatorContact,
 		Status:          true,
@@ -70,12 +70,14 @@ func (t *TourRepositories) GetToursByLocation(location string) ([]tourDto.TourOb
 	return tours, nil
 }
 
-func (t *TourRepositories) GetToursByDateRange(startDate, endDate string) ([]tourDto.TourObject, error) {
+func (t *TourRepositories) GetToursByDateRange(startDate, endDate time.Time) ([]tourDto.TourObject, error) {
 	if t.DB == nil {
 		return nil, errors.New("tour DB Not Initialized")
 	}
+	startDateStr := startDate.Format("2006-01-02")
+	endDateStr := endDate.Format("2006-01-02")
 	var tours []tourDto.TourObject
-	if err := t.DB.Where("date BETWEEN ? AND ?", startDate, endDate).Find(&tours).Error; err != nil {
+	if err := t.DB.Where("date BETWEEN ? AND ?", startDateStr, endDateStr).Find(&tours).Error; err != nil {
 		return nil, fmt.Errorf("exception getting tours by date range: %w", err)
 	}
 	return tours, nil
@@ -113,10 +115,9 @@ func (t *TourRepositories) DeleteTour(id string) error {
 	if err := t.DB.Delete(&tourDto.TourObject{}, "id = ?", id).Error; err != nil {
 		return fmt.Errorf("exception deleting tour: %w", err)
 	}
-
 	return nil
 }
-func (t *TourRepositories) UpdateTour(id string, updatedFields map[string]interface{}) (tourDto.TourObject, error) {
+func (t *TourRepositories) UpdateTour(id string, updatedFields tourDto.UpdateTourDto) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tour DB Not Initialized")
 	}

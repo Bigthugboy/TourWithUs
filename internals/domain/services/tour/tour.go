@@ -1,6 +1,7 @@
 package tour
 
 import (
+	"errors"
 	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/tourUseCaseInputPort"
 	database "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/tourRepo"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper"
@@ -8,6 +9,8 @@ import (
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
 	"net/http"
+	"strings"
+	"time"
 )
 
 type Tour struct {
@@ -48,6 +51,13 @@ func (t *Tour) CreateTour(request *model.TourDto) (*model.CreateTourResponse, er
 }
 
 func (t *Tour) GetTourById(id string) (*model.TourDto, error) {
+	if id == "" || strings.TrimSpace(id) == "" {
+		return nil, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidTourID,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid id"),
+		}
+	}
 	res, err := t.DB.GetTourById(id)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -60,7 +70,7 @@ func (t *Tour) GetTourById(id string) (*model.TourDto, error) {
 	return &resp, nil
 }
 
-func (t Tour) GetAllTours() ([]model.TourDto, error) {
+func (t *Tour) GetAllTours() ([]model.TourDto, error) {
 	res, err := t.DB.GetAllTours()
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -91,6 +101,13 @@ func (t *Tour) GetAvailableTours() ([]model.TourDto, error) {
 }
 
 func (t *Tour) GetToursByLocation(location string) ([]model.TourDto, error) {
+	if location == "" || strings.TrimSpace(location) == "" {
+		return nil, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid tour location"),
+		}
+	}
 	res, err := t.DB.GetToursByLocation(location)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -105,8 +122,18 @@ func (t *Tour) GetToursByLocation(location string) ([]model.TourDto, error) {
 	return domainMapper.MapToursToDto(res), nil
 }
 
-func (t Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, error) {
-	res, err := t.DB.GetToursByDateRange(startDate, endDate)
+func (t *Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, error) {
+	if startDate == "" || endDate == "" {
+		return nil, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid tour date"),
+		}
+	}
+	startDateStr, _ := time.Parse("2006-01-02", startDate)
+	endDateStr, _ := time.Parse("2006-01-02", endDate)
+
+	res, err := t.DB.GetToursByDateRange(startDateStr, endDateStr)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrFailToGetTour,
@@ -120,7 +147,14 @@ func (t Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, e
 	return domainMapper.MapToursToDto(res), nil
 }
 
-func (t Tour) GetToursByPriceRange(minPrice, maxPrice float64) ([]model.TourDto, error) {
+func (t *Tour) GetToursByPriceRange(minPrice, maxPrice float64) ([]model.TourDto, error) {
+	if minPrice == 0.0 || maxPrice == 0.0 {
+		return nil, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid price"),
+		}
+	}
 	res, err := t.DB.GetToursByPriceRange(minPrice, maxPrice)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -151,6 +185,13 @@ func (t *Tour) GetToursByType(tourType model.TourType) ([]model.TourDto, error) 
 }
 
 func (t *Tour) SearchTours(query string) ([]model.TourDto, error) {
+	if query == "" {
+		return nil, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid query "),
+		}
+	}
 	res, err := t.DB.SearchTours(query)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -166,6 +207,13 @@ func (t *Tour) SearchTours(query string) ([]model.TourDto, error) {
 }
 
 func (t *Tour) DeleteTour(id string) (*model.DeleteResponse, error) {
+	if id == "" || strings.TrimSpace(id) == "" {
+		return &model.DeleteResponse{}, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidTourID,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: errors.New("invalid id"),
+		}
+	}
 	if err := t.DB.DeleteTour(id); err != nil {
 		return &model.DeleteResponse{}, &exception.TourWithUsError{
 			Message:      exception.ErrFailToDeleteTour,

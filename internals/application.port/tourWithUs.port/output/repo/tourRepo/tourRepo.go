@@ -1,6 +1,9 @@
 package tourRepo
 
-import "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
+import (
+	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
+	"time"
+)
 
 type TourRepository interface {
 	CreateTour(object tourDto.TourObject) (tourDto.CreateTourResponse, error)
@@ -8,10 +11,10 @@ type TourRepository interface {
 	GetTourById(id string) (tourDto.TourObject, error)
 	GetAvailableTours() ([]tourDto.TourObject, error)
 	GetToursByLocation(location string) ([]tourDto.TourObject, error)
-	GetToursByDateRange(startDate, endDate string) ([]tourDto.TourObject, error)
+	GetToursByDateRange(startDate, endDate time.Time) ([]tourDto.TourObject, error)
 	GetToursByPriceRange(minPrice, maxPrice float64) ([]tourDto.TourObject, error)
 	GetToursByType(tourType tourDto.TourType) ([]tourDto.TourObject, error)
 	SearchTours(query string) ([]tourDto.TourObject, error)
 	DeleteTour(id string) error
-	UpdateTour(id string, updatedFields map[string]interface{}) (tourDto.TourObject, error)
+	UpdateTour(id string, updatedFields tourDto.UpdateTourDto) (tourDto.TourObject, error)
 }

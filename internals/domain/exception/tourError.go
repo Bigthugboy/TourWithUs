@@ -23,6 +23,8 @@ const (
 	ErrFailToGetTour            = "Failed to get tour"
 	ErrFailToDeleteTour         = "Failed to delete tour"
 	ErrFailToUpdateTour         = "Failed to update tour"
+	ErrInvalidTourID            = "Invalid Tour ID"
+	ErrInvalidRequest           = "Invalid request"
 )
 
 type TourWithUsError struct {
