@@ -179,7 +179,7 @@ func LoginUser(credentials LoginCredentials) (string, error) {
 	}
 	endpoint := "http://localhost:8080/realms/TourWithUs/protocol/openid-connect/token"
 	payload := map[string]string{
-		"client_id":     "tour",
+		"client_id":     "tourModel",
 		"grant_type":    "password",
 		"username":      credentials.Username,
 		"password":      credentials.Password,
@@ -306,7 +306,7 @@ func (k *Keycloak) ensureValidToken() error {
 
 func (k *Keycloak) refreshToken() error {
 	payload := Payload{
-		ClientId:     "tour",
+		ClientId:     "tourModel",
 		ClientSecret: "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk",
 		GrantType:    "client_credentials",
 		Username:     "admin",

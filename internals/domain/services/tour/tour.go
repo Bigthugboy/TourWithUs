@@ -2,11 +2,11 @@ package tour
 
 import (
 	"errors"
-	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/tourUseCaseInputPort"
+	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/tourUseCase"
 	database "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/tourRepo"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper/tourMapper"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/exception"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	model "github.com/Bigthugboy/TourWithUs/internals/domain/model/tourModel"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
 	"net/http"
 	"strings"
@@ -31,7 +31,7 @@ func (t *Tour) CreateTour(request *model.TourDto) (*model.CreateTourResponse, er
 			ErrorMessage: err,
 		}
 	}
-	req := domainMapper.MapModelTourDtoToTourDBObject(request)
+	req := tourMapper.MapModelTourDtoToTourDBObject(request)
 	res, err := t.DB.CreateTour(req)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -66,7 +66,7 @@ func (t *Tour) GetTourById(id string) (*model.TourDto, error) {
 			ErrorMessage: err,
 		}
 	}
-	resp := domainMapper.MapObjectDtoToModelDto(&res)
+	resp := tourMapper.MapObjectDtoToModelDto(&res)
 	return &resp, nil
 }
 
@@ -82,7 +82,7 @@ func (t *Tour) GetAllTours() ([]model.TourDto, error) {
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) GetAvailableTours() ([]model.TourDto, error) {
@@ -97,7 +97,7 @@ func (t *Tour) GetAvailableTours() ([]model.TourDto, error) {
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) GetToursByLocation(location string) ([]model.TourDto, error) {
@@ -105,7 +105,7 @@ func (t *Tour) GetToursByLocation(location string) ([]model.TourDto, error) {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrInvalidRequest,
 			StatusCode:   http.StatusBadRequest,
-			ErrorMessage: errors.New("invalid tour location"),
+			ErrorMessage: errors.New("invalid tourModel location"),
 		}
 	}
 	res, err := t.DB.GetToursByLocation(location)
@@ -119,7 +119,7 @@ func (t *Tour) GetToursByLocation(location string) ([]model.TourDto, error) {
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, error) {
@@ -127,7 +127,7 @@ func (t *Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, 
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrInvalidRequest,
 			StatusCode:   http.StatusBadRequest,
-			ErrorMessage: errors.New("invalid tour date"),
+			ErrorMessage: errors.New("invalid tourModel date"),
 		}
 	}
 	startDateStr, _ := time.Parse("2006-01-02", startDate)
@@ -144,7 +144,7 @@ func (t *Tour) GetToursByDateRange(startDate, endDate string) ([]model.TourDto, 
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) GetToursByPriceRange(minPrice, maxPrice float64) ([]model.TourDto, error) {
@@ -166,7 +166,7 @@ func (t *Tour) GetToursByPriceRange(minPrice, maxPrice float64) ([]model.TourDto
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) GetToursByType(tourType model.TourType) ([]model.TourDto, error) {
@@ -181,7 +181,7 @@ func (t *Tour) GetToursByType(tourType model.TourType) ([]model.TourDto, error) 
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) SearchTours(query string) ([]model.TourDto, error) {
@@ -203,7 +203,7 @@ func (t *Tour) SearchTours(query string) ([]model.TourDto, error) {
 	if len(res) == 0 {
 		return []model.TourDto{}, nil
 	}
-	return domainMapper.MapToursToDto(res), nil
+	return tourMapper.MapToursToDto(res), nil
 }
 
 func (t *Tour) DeleteTour(id string) (*model.DeleteResponse, error) {
@@ -228,7 +228,7 @@ func (t *Tour) DeleteTour(id string) (*model.DeleteResponse, error) {
 }
 
 func (t *Tour) UpdateTour(id string, dto model.UpdateTourDto) (*model.TourDto, error) {
-	req := domainMapper.MapUpdateTourDtoToTourObject(&dto)
+	req := tourMapper.MapUpdateTourDtoToTourObject(&dto)
 	tour, err := t.DB.UpdateTour(id, req)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -237,6 +237,48 @@ func (t *Tour) UpdateTour(id string, dto model.UpdateTourDto) (*model.TourDto, e
 			ErrorMessage: err,
 		}
 	}
-	res := domainMapper.MapObjectDtoToModelDto(&tour)
+	res := tourMapper.MapObjectDtoToModelDto(&tour)
 	return &res, nil
+}
+
+func (t *Tour) GetTourByTourOperator(tour model.TourDto) (model.TourDto, error) {
+	if err := services.ValidateRequest(tour); err != nil {
+		return model.TourDto{}, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: err,
+		}
+	}
+	res, err := t.DB.GetTourByTourOperator(tour.OperatorID)
+	if err != nil {
+		return model.TourDto{}, &exception.TourWithUsError{
+			Message:      exception.ErrFailToGetTour,
+			StatusCode:   http.StatusInternalServerError,
+			ErrorMessage: err,
+		}
+	}
+	resp := tourMapper.MapObjectDtoToModelDto(&res)
+	return resp, err
+}
+
+func (t *Tour) GetToursByTourOperator(tour model.TourDto) ([]model.TourDto, error) {
+	if err := services.ValidateRequest(tour); err != nil {
+		return []model.TourDto{}, &exception.TourWithUsError{
+			Message:      exception.ErrInvalidRequest,
+			StatusCode:   http.StatusBadRequest,
+			ErrorMessage: err,
+		}
+	}
+	res, err := t.DB.GetListOfToursByOperator(tour.OperatorID)
+	if err != nil {
+		return []model.TourDto{}, &exception.TourWithUsError{
+			Message:      exception.ErrFailToGetTour,
+			StatusCode:   http.StatusInternalServerError,
+			ErrorMessage: err,
+		}
+	}
+	if len(res) == 0 {
+		return []model.TourDto{}, nil
+	}
+	return tourMapper.MapToursToDto(res), nil
 }

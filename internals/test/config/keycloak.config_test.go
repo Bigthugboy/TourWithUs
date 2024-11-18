@@ -57,7 +57,7 @@ func Login() config2.LoginCredentials {
 	}
 }
 func TestGenerateToken(t *testing.T) {
-	client_id := "tour"
+	client_id := "tourModel"
 	client_secret := "SjrSFWLqOzRVa36FC5SI6sdBDfc7AjJk"
 	grant_type := "client_credentials"
 	service := config2.Keycloak{}

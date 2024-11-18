@@ -3,7 +3,7 @@ package tour
 import (
 	"errors"
 	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/tourRepo/internals/test/domain"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper/tourMapper"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/exception"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services/tour"
@@ -174,7 +174,7 @@ func TestTourCanBeCreated(t *testing.T) {
 	assert.Equal(t, "Lagos City Tour", res.TourTitle)
 	assert.Equal(t, "08012345678", res.OperatorContact)
 
-	t.Run("error in creating tour", func(t *testing.T) {
+	t.Run("error in creating tourModel", func(t *testing.T) {
 		mockDb.EXPECT().CreateTour(gomock.Eq(tourDetail)).Return(tourDto.CreateTourResponse{}, errors.New("database error"))
 		result, err := service.CreateTour(tourDetails())
 		assert.Nil(t, result)
@@ -196,7 +196,7 @@ func TestTourCreationRequestValidation(t *testing.T) {
 	tourDetail := tourDetails()
 	service := tour.NewTour(mockDb)
 
-	t.Run("empty/blank tour title", func(t *testing.T) {
+	t.Run("empty/blank tourModel title", func(t *testing.T) {
 		tourDetail.TourTitle = ""
 		service := tour.NewTour(mockDb)
 		res, err := service.CreateTour(tourDetail)
@@ -468,7 +468,7 @@ func TestUpdateTour_InvalidPriceFormat(t *testing.T) {
 		Price:     &price,
 		Location:  &location,
 	}
-	req := domainMapper.MapUpdateTourDtoToTourObject(&dto)
+	req := tourMapper.MapUpdateTourDtoToTourObject(&dto)
 
 	mockDb.EXPECT().UpdateTour("1", req).Return(tourDto.TourObject{}, errors.New("invalid price format"))
 
@@ -494,7 +494,7 @@ func TestUpdateTour_Error(t *testing.T) {
 		Price:     &price,
 		Location:  &location,
 	}
-	req := domainMapper.MapUpdateTourDtoToTourObject(&dto)
+	req := tourMapper.MapUpdateTourDtoToTourObject(&dto)
 
 	mockDb.EXPECT().UpdateTour("1", req).Return(tourDto.TourObject{}, errors.New("database error"))
 

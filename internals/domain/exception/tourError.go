@@ -19,12 +19,15 @@ const (
 	ErrFailTOLoginUser          = "Failed to login user"
 	ErrUserNotFound             = "User not found"
 	ErrFailToLoginUser          = "Failed to login user"
-	ErrFailToCreateTour         = "Failed to create tour"
-	ErrFailToGetTour            = "Failed to get tour"
-	ErrFailToDeleteTour         = "Failed to delete tour"
-	ErrFailToUpdateTour         = "Failed to update tour"
+	ErrFailToCreateTour         = "Failed to create tourModel"
+	ErrFailToGetTour            = "Failed to get tourModel"
+	ErrFailToDeleteTour         = "Failed to delete tourModel"
+	ErrFailToUpdateTour         = "Failed to update tourModel"
 	ErrInvalidTourID            = "Invalid Tour ID"
 	ErrInvalidRequest           = "Invalid request"
+	ErrFailToGenerateToken      = "Failed to generate token"
+	ErrInvalidCredentials       = "Invalid credentials"
+	ErrEncryptingPassword       = "Error encrypting password"
 )
 
 type TourWithUsError struct {

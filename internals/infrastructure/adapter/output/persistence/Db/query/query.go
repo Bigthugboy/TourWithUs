@@ -12,12 +12,12 @@ func (t *TourDB) InsertTourist(tourist touristDto.TouristObject) (*touristDto.To
 		return nil, -1, fmt.Errorf("database connection is not initialized")
 	}
 	if err := t.DB.Create(&tourist).Error; err != nil {
-		return nil, -1, fmt.Errorf("exception inserting new tourist: %w", err)
+		return nil, -1, fmt.Errorf("exception inserting new touristModel: %w", err)
 	}
 	return &tourist, 1, nil
 }
 
-// SearchTouristByEmail finds a tourist by email.
+// SearchTouristByEmail finds a touristModel by email.
 func (t *TourDB) SearchTouristByEmail(email string) (touristDto.TouristObject, error) {
 	if t.DB == nil {
 		return touristDto.TouristObject{}, fmt.Errorf("database connection is not initialized")
@@ -36,7 +36,7 @@ func (t *TourDB) SearchTouristByEmail(email string) (touristDto.TouristObject, e
 	return user, nil
 }
 
-// GetTouristByID retrieves a tourist by ID.
+// GetTouristByID retrieves a touristModel by ID.
 func (t *TourDB) GetTouristByID(userID string) (touristDto.TouristObject, error) {
 	if t.DB == nil {
 		return touristDto.TouristObject{}, fmt.Errorf("database connection is not initialized")
@@ -45,7 +45,7 @@ func (t *TourDB) GetTouristByID(userID string) (touristDto.TouristObject, error)
 	err := t.DB.Preload("Wallet").First(&user, userID).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return touristDto.TouristObject{}, fmt.Errorf("tourist not found")
+			return touristDto.TouristObject{}, fmt.Errorf("touristModel not found")
 		}
 		return touristDto.TouristObject{}, fmt.Errorf("failed to find user: %w", err)
 	}
@@ -65,26 +65,26 @@ func (t *TourDB) GetAllTourists() ([]touristDto.TouristObject, error) {
 	return users, nil
 }
 
-// DeleteTouristByID deletes a tourist by their ID.
+// DeleteTouristByID deletes a touristModel by their ID.
 func (t *TourDB) DeleteTouristByID(userID string) error {
 	if t.DB == nil {
 		return fmt.Errorf("database connection is not initialized")
 	}
 	err := t.DB.Delete(&touristDto.TouristObject{}, userID).Error
 	if err != nil {
-		return fmt.Errorf("failed to delete tourist by ID: %w", err)
+		return fmt.Errorf("failed to delete touristModel by ID: %w", err)
 	}
 	return nil
 }
 
-// DeleteTouristByEmail deletes a tourist by their email.
+// DeleteTouristByEmail deletes a touristModel by their email.
 func (t *TourDB) DeleteTouristByEmail(email string) error {
 	if t.DB == nil {
 		return fmt.Errorf("database connection is not initialized")
 	}
 	err := t.DB.Where("email = ?", email).Delete(&touristDto.TouristObject{}).Error
 	if err != nil {
-		return fmt.Errorf("failed to delete tourist by email: %w", err)
+		return fmt.Errorf("failed to delete touristModel by email: %w", err)
 	}
 	return nil
 }

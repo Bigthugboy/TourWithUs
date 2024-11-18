@@ -66,5 +66,5 @@ func TestRegisterTouristUseCase_UserAlreadyExists(t *testing.T) {
 	_, err := useCase.RegisterTouristUseCase(request)
 
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "tourist with this email already exists")
+	assert.Contains(t, err.Error(), "touristModel with this email already exists")
 }

@@ -2,12 +2,12 @@ package tourist
 
 import (
 	"fmt"
-	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCaseInputPort"
+	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCase"
 	port "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port"
 	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/touristRepo"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper/touristMapper"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/exception"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	model "github.com/Bigthugboy/TourWithUs/internals/domain/model/touristModel"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services"
 	"net/http"
 )
@@ -17,7 +17,7 @@ type TouristUseCase struct {
 	keycloakOutPutPort port.KeycloakOutPutPort
 }
 
-func NewTourist(db touristRepo.DBStore, keycloakAdapter port.KeycloakOutPutPort) touristUseCaseInputPort.TouristUseCase {
+func NewTourist(db touristRepo.DBStore, keycloakAdapter port.KeycloakOutPutPort) touristUseCase.TouristUseCase {
 	return &TouristUseCase{
 		Db:                 db,
 		keycloakOutPutPort: keycloakAdapter,
@@ -34,9 +34,9 @@ func (t *TouristUseCase) RegisterTouristUseCase(request *model.RegisterRequest) 
 	}
 	_, err := t.Db.SearchTouristByEmail(request.Email)
 	if err == nil {
-		return nil, fmt.Errorf("tourist with this email already exists")
+		return nil, fmt.Errorf("touristModel with this email already exists")
 	}
-	KTourist := domainMapper.MapRegisterRequestToTouristDetails(request)
+	KTourist := touristMapper.MapRegisterRequestToTouristDetails(request)
 
 	response, err := t.keycloakOutPutPort.SaveTourist(&KTourist)
 	if err != nil {
@@ -54,7 +54,7 @@ func (t *TouristUseCase) RegisterTouristUseCase(request *model.RegisterRequest) 
 			ErrorMessage: fmt.Errorf("unexpected response: %s", response),
 		}
 	}
-	DTourist := domainMapper.MapRegisterRequestToTouristObject(request)
+	DTourist := touristMapper.MapRegisterRequestToTouristObject(request)
 	savedTourist, id, err := t.Db.InsertTourist(DTourist)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -88,7 +88,7 @@ func (t *TouristUseCase) Login(details model.LoginRequest) (*model.LoginResponse
 			ErrorMessage: fmt.Errorf("no user found with email %s: %w", details.Email, err),
 		}
 	}
-	touristDetails := domainMapper.MapLoginRequestToTouristDetails(&details)
+	touristDetails := touristMapper.MapLoginRequestToTouristDetails(&details)
 	touristDetails.Email = fetchedUser.Email
 	touristDetails.Password = fetchedUser.Password
 

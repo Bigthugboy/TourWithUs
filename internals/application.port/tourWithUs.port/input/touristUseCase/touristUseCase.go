@@ -1,7 +1,7 @@
-package touristUseCaseInputPort
+package touristUseCase
 
 import (
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	model "github.com/Bigthugboy/TourWithUs/internals/domain/model/touristModel"
 )
 
 type TouristUseCase interface {

@@ -41,7 +41,7 @@ func (s *KeycloakAdapter) SaveTourist(details *touristDto.TouristDetails) (strin
 	}
 	result, err := config.SaveTouristOnKeycloak(regPayload)
 	if err != nil {
-		return "", fmt.Errorf("failed to save tourist in KeycloakAdapter: %w", err)
+		return "", fmt.Errorf("failed to save touristModel in KeycloakAdapter: %w", err)
 	}
 	return result, nil
 }
@@ -53,7 +53,7 @@ func (s *KeycloakAdapter) RetrieveTourist(details touristDto.RetrieveTourist) (s
 	loginDetails := mapper.MapRetrieveDetailsToKeycloakLoginCredentials(&details)
 	result, err := config.LoginUser(loginDetails)
 	if err != nil {
-		return "", fmt.Errorf("failed to retrieve tourist in KeycloakAdapter: %w", err)
+		return "", fmt.Errorf("failed to retrieve touristModel in KeycloakAdapter: %w", err)
 	}
 	return result, nil
 }

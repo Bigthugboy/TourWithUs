@@ -1,8 +1,8 @@
 package controller
 
 import (
-	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCaseInputPort"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	usecase "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/input/touristUseCase"
+	"github.com/Bigthugboy/TourWithUs/internals/domain/model/touristModel"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,7 +16,7 @@ func NewTouristController(useCase usecase.TouristUseCase) *TouristController {
 }
 
 func (c *TouristController) RegisterTourist(ctx *gin.Context) {
-	var tourist model.RegisterRequest
+	var tourist touristModel.RegisterRequest
 	if err := ctx.ShouldBindJSON(&tourist); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
@@ -30,7 +30,7 @@ func (c *TouristController) RegisterTourist(ctx *gin.Context) {
 }
 
 func (c *TouristController) LoginTourist(ctx *gin.Context) {
-	var tourist model.LoginRequest
+	var tourist touristModel.LoginRequest
 	if err := ctx.ShouldBindJSON(&tourist); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
