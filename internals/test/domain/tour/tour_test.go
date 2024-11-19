@@ -5,7 +5,7 @@ import (
 	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/tourRepo/internals/test/domain"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/domainMapper/tourMapper"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/exception"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	model "github.com/Bigthugboy/TourWithUs/internals/domain/model/tourModel"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services/tour"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
 	"github.com/golang/mock/gomock"
@@ -17,8 +17,7 @@ import (
 )
 
 func tourDetails() *model.TourDto {
-	startDate, _ := time.Parse("2006-01-02", "2024-11-15")
-	endDate, _ := time.Parse("2006-01-02", "2024-11-20")
+
 	return &model.TourDto{
 		OperatorID:      "1",
 		TourTitle:       "Lagos City Tour",
@@ -34,14 +33,12 @@ func tourDetails() *model.TourDto {
 		TouristEmail:    "johndoe@example.com",
 		Availability:    true,
 		TourType:        "Day Tour",
-		StartDate:       startDate,
-		EndDate:         endDate,
+		StartDate:       "2024-11-15",
+		EndDate:         "2024-11-20",
 	}
 }
 
 func tourObjectDetails() tourDto.TourObject {
-	startDate, _ := time.Parse("2006-01-02", "2024-11-15")
-	endDate, _ := time.Parse("2006-01-02", "2024-11-20")
 	return tourDto.TourObject{
 		OperatorID:      "1",
 		TourTitle:       "Lagos City Tour",
@@ -57,8 +54,8 @@ func tourObjectDetails() tourDto.TourObject {
 		TouristEmail:    "johndoe@example.com",
 		Availability:    true,
 		TourType:        "Day Tour",
-		StartDate:       startDate,
-		EndDate:         endDate,
+		StartDate:       "2024-11-15",
+		EndDate:         "2024-11-20",
 	}
 }
 
@@ -69,8 +66,7 @@ func tourObjectList() []tourDto.TourObject {
 }
 
 func tourObjectDetailsList() []tourDto.TourObject {
-	startDate, _ := time.Parse("2006-01-02", "2024-11-15")
-	endDate, _ := time.Parse("2006-01-02", "2024-11-20")
+
 	return []tourDto.TourObject{
 		{
 			OperatorID:      "1",
@@ -87,8 +83,8 @@ func tourObjectDetailsList() []tourDto.TourObject {
 			TouristEmail:    "johndoe@example.com",
 			Availability:    false,
 			TourType:        "Day Tour",
-			StartDate:       startDate,
-			EndDate:         endDate,
+			StartDate:       "2024-11-15",
+			EndDate:         "2024-11-20",
 		},
 		{
 			OperatorID:      "2",
@@ -105,8 +101,8 @@ func tourObjectDetailsList() []tourDto.TourObject {
 			TouristEmail:    "janesmith@example.com",
 			Availability:    true,
 			TourType:        "Adventure Tour",
-			StartDate:       startDate,
-			EndDate:         endDate,
+			StartDate:       "2024-11-15",
+			EndDate:         "2024-11-20",
 		},
 		{
 			OperatorID:      "3",
@@ -123,8 +119,8 @@ func tourObjectDetailsList() []tourDto.TourObject {
 			TouristEmail:    "ahmedmusa@example.com",
 			Availability:    true,
 			TourType:        "Historical Tour",
-			StartDate:       startDate,
-			EndDate:         endDate,
+			StartDate:       "2024-11-15",
+			EndDate:         "2024-11-20",
 		},
 		{
 			OperatorID:      "4",
@@ -141,8 +137,8 @@ func tourObjectDetailsList() []tourDto.TourObject {
 			TouristEmail:    "emekaokafor@example.com",
 			Availability:    true,
 			TourType:        "Festival Tour",
-			StartDate:       startDate,
-			EndDate:         endDate,
+			StartDate:       "2024-11-15",
+			EndDate:         "2024-11-20",
 		},
 	}
 }
@@ -423,8 +419,6 @@ func TestUpdateTour_Success(t *testing.T) {
 		Location:  &location,
 	}
 
-	startDate, _ := time.Parse("2006-01-02", "2024-11-15")
-	endDate, _ := time.Parse("2006-01-02", "2024-11-20")
 	expectedTour := tourDto.TourObject{
 		TourTitle:       "Updated Tour Title",
 		Location:        "Updated Location",
@@ -439,8 +433,8 @@ func TestUpdateTour_Success(t *testing.T) {
 		TouristEmail:    "janesmith@example.com",
 		Availability:    true,
 		TourType:        "Adventure Tour",
-		StartDate:       startDate,
-		EndDate:         endDate,
+		StartDate:       "2024-11-15",
+		EndDate:         "2024-11-20",
 	}
 	mockDb.EXPECT().UpdateTour("1", gomock.Eq(objectDto)).Return(expectedTour, nil)
 

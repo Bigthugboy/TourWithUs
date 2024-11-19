@@ -4,7 +4,7 @@ import (
 	"errors"
 	domain2 "github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/keycloakOutput.port/internals/test/domain"
 	"github.com/Bigthugboy/TourWithUs/internals/application.port/tourWithUs.port/output/repo/internals/test/domain"
-	"github.com/Bigthugboy/TourWithUs/internals/domain/model"
+	model "github.com/Bigthugboy/TourWithUs/internals/domain/model/touristModel"
 	"github.com/Bigthugboy/TourWithUs/internals/domain/services/tourist"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/touristDto"
 

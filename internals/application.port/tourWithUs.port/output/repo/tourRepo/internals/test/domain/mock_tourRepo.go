@@ -94,6 +94,21 @@ func (mr *MockTourRepositoryMockRecorder) GetAvailableTours() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailableTours", reflect.TypeOf((*MockTourRepository)(nil).GetAvailableTours))
 }
 
+// GetListOfToursByOperator mocks base method.
+func (m *MockTourRepository) GetListOfToursByOperator(tourOperatorId string) ([]tourDto.TourObject, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetListOfToursByOperator", tourOperatorId)
+	ret0, _ := ret[0].([]tourDto.TourObject)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetListOfToursByOperator indicates an expected call of GetListOfToursByOperator.
+func (mr *MockTourRepositoryMockRecorder) GetListOfToursByOperator(tourOperatorId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetListOfToursByOperator", reflect.TypeOf((*MockTourRepository)(nil).GetListOfToursByOperator), tourOperatorId)
+}
+
 // GetTourById mocks base method.
 func (m *MockTourRepository) GetTourById(id string) (tourDto.TourObject, error) {
 	m.ctrl.T.Helper()
@@ -107,6 +122,21 @@ func (m *MockTourRepository) GetTourById(id string) (tourDto.TourObject, error) 
 func (mr *MockTourRepositoryMockRecorder) GetTourById(id interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTourById", reflect.TypeOf((*MockTourRepository)(nil).GetTourById), id)
+}
+
+// GetTourByTourOperator mocks base method.
+func (m *MockTourRepository) GetTourByTourOperator(tourOperatorId string) (tourDto.TourObject, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetTourByTourOperator", tourOperatorId)
+	ret0, _ := ret[0].(tourDto.TourObject)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetTourByTourOperator indicates an expected call of GetTourByTourOperator.
+func (mr *MockTourRepositoryMockRecorder) GetTourByTourOperator(tourOperatorId interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTourByTourOperator", reflect.TypeOf((*MockTourRepository)(nil).GetTourByTourOperator), tourOperatorId)
 }
 
 // GetToursByDateRange mocks base method.

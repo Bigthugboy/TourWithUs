@@ -20,8 +20,8 @@ type TourDto struct {
 	Price           float64   `json:"price"`
 	TouristEmail    string    `json:"tourist_email"`
 	Availability    bool      `json:"availability"`
-	StartDate       time.Time `json:"start_date"`
-	EndDate         time.Time `json:"end_date"`
+	StartDate       string    `json:"start_date"`
+	EndDate         string    `json:"end_date"`
 }
 
 type TourObject struct {
@@ -41,8 +41,8 @@ type TourObject struct {
 	TouristEmail    string    `json:"tourist_email"`
 	Availability    bool      `json:"availability"`
 	TourType        TourType  `json:"tour_type"`
-	StartDate       time.Time `json:"start_date"`
-	EndDate         time.Time `json:"end_date"`
+	StartDate       string    `json:"start_date"`
+	EndDate         string    `json:"end_date"`
 }
 type CreateTourResponse struct {
 	TourId          uint    `json:"id"`
@@ -64,19 +64,19 @@ const (
 )
 
 type UpdateTourDto struct {
-	OperatorID      *string    `json:"operator_id"`
-	TourTitle       *string    `json:"tour_title"`
-	Location        *string    `json:"location"`
-	Duration        *string    `json:"duration"`
-	LanguageOffered *string    `json:"language_offered"`
-	NumberOfTourist *string    `json:"number_of_tourist"`
-	Description     *string    `json:"description"`
-	TourGuide       *string    `json:"tour_guide"`
-	OperatorContact *string    `json:"operator_contact"`
-	Activity        *string    `json:"activity"`
-	Price           *float64   `json:"price"`
-	TouristEmail    *string    `json:"tourist_email"`
-	Availability    *bool      `json:"availability"`
-	StartDate       *time.Time `json:"start_date"`
-	EndDate         *time.Time `json:"end_date"`
+	OperatorID      *string  `json:"operator_id"`
+	TourTitle       *string  `json:"tour_title"`
+	Location        *string  `json:"location"`
+	Duration        *string  `json:"duration"`
+	LanguageOffered *string  `json:"language_offered"`
+	NumberOfTourist *string  `json:"number_of_tourist"`
+	Description     *string  `json:"description"`
+	TourGuide       *string  `json:"tour_guide"`
+	OperatorContact *string  `json:"operator_contact"`
+	Activity        *string  `json:"activity"`
+	Price           *float64 `json:"price"`
+	TouristEmail    *string  `json:"tourist_email"`
+	Availability    *bool    `json:"availability"`
+	StartDate       *string  `json:"start_date"`
+	EndDate         *string  `json:"end_date"`
 }

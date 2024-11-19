@@ -14,7 +14,6 @@ func ValidateRequest(request interface{}) error {
 		if err != nil {
 			return err
 		}
-
 	}
 
 	return nil

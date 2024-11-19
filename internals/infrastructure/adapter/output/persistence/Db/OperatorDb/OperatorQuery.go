@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	dto "github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/operatorDto"
+	"github.com/jinzhu/gorm"
 )
 
 func (o *OperatorDb) SaveTourOperator(object dto.OperatorDto) (dto.SavedOperatorRes, error) {
@@ -65,8 +66,13 @@ func (o *OperatorDb) GetTourOperatorByEmail(email string) (dto.OperatorDto, erro
 		return dto.OperatorDto{}, errors.New("database not initialized")
 	}
 	var operator dto.OperatorDto
-	if err := o.DB.Where("email = ?", email).First(&operator).Error; err != nil {
+	err := o.DB.Select("id, first_name, last_name, email, password, phone_number, rating").
+		Where("email = ?", email).
+		First(&operator).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return dto.OperatorDto{}, fmt.Errorf("exception getting tour model: %w", err)
+	} else if err != nil {
+		return dto.OperatorDto{}, fmt.Errorf("error querying databse ", err)
 	}
 	return operator, nil
 }

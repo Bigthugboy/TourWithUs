@@ -6,23 +6,23 @@ import (
 )
 
 type TourDto struct {
-	OperatorID      string    `json:"operator_id"validate:"required"`
-	TourTitle       string    `json:"tour_title"validate:"required"`
+	OperatorID      string    `json:"operatorId"validate:"required"`
+	TourTitle       string    `json:"tourTitle"validate:"required"`
 	Location        string    `json:"location"validate:"required"`
 	Duration        string    `json:"duration"validate:"required"`
-	LanguageOffered string    `json:"language_offered"`
-	NumberOfTourist string    `json:"number_of_tourist"`
+	LanguageOffered string    `json:"languageOffered"`
+	NumberOfTourist string    `json:"numberOfTourist"`
 	Description     string    `json:"description"`
-	TourGuide       string    `json:"tour_guide"validate:"required"`
-	OperatorContact string    `json:"operator_contact"validate:"required"`
+	TourGuide       string    `json:"tourGuide"validate:"required"`
+	OperatorContact string    `json:"operatorContact"validate:"required"`
 	Activity        string    `json:"activity"`
 	Date            time.Time `json:"date"`
 	Price           float64   `json:"price"validate:"required"`
-	TouristEmail    string    `json:"tourist_email"`
+	TouristEmail    string    `json:"touristEmail"`
 	Availability    bool      `json:"availability"`
-	TourType        TourType  `json:"tour_type"`
-	StartDate       time.Time `json:"start_date"validate:"required"`
-	EndDate         time.Time `json:"end_date"validate:"required"`
+	TourType        TourType  `json:"tourType"`
+	StartDate       string    `json:"startDate"validate:"required"`
+	EndDate         string    `json:"endDate"validate:"required"`
 }
 
 type CreateTourResponse struct {
@@ -53,19 +53,19 @@ type DeleteResponse struct {
 }
 
 type UpdateTourDto struct {
-	OperatorID      *string    `json:"operator_id"`
-	TourTitle       *string    `json:"tour_title"`
-	Location        *string    `json:"location"`
-	Duration        *string    `json:"duration"`
-	LanguageOffered *string    `json:"language_offered"`
-	NumberOfTourist *string    `json:"number_of_tourist"`
-	Description     *string    `json:"description"`
-	TourGuide       *string    `json:"tour_guide"`
-	OperatorContact *string    `json:"operator_contact"`
-	Activity        *string    `json:"activity"`
-	Price           *float64   `json:"price"`
-	TouristEmail    *string    `json:"tourist_email"`
-	Availability    *bool      `json:"availability"`
-	StartDate       *time.Time `json:"start_date"`
-	EndDate         *time.Time `json:"end_date"`
+	OperatorID      *string  `json:"operator_id"`
+	TourTitle       *string  `json:"tour_title"`
+	Location        *string  `json:"location"`
+	Duration        *string  `json:"duration"`
+	LanguageOffered *string  `json:"language_offered"`
+	NumberOfTourist *string  `json:"number_of_tourist"`
+	Description     *string  `json:"description"`
+	TourGuide       *string  `json:"tour_guide"`
+	OperatorContact *string  `json:"operator_contact"`
+	Activity        *string  `json:"activity"`
+	Price           *float64 `json:"price"`
+	TouristEmail    *string  `json:"tourist_email"`
+	Availability    *bool    `json:"availability"`
+	StartDate       *string  `json:"start_date"`
+	EndDate         *string  `json:"end_date"`
 }

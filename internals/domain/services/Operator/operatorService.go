@@ -37,7 +37,7 @@ func (o *Service) RegisterTourOperator(operator model.TourOperator) (*model.Crea
 		}
 	}
 	_, err := o.Db.GetTourOperatorByEmail(operator.Email)
-	if err != nil {
+	if err == nil {
 		return nil, &exception.TourWithUsError{
 			Message:      "User with email already exists",
 			StatusCode:   http.StatusConflict,
@@ -54,7 +54,6 @@ func (o *Service) RegisterTourOperator(operator model.TourOperator) (*model.Crea
 	}
 	operator.Password = hashedPassword
 	touroperator := tourOperatorMapper.MapperOperatorDtoTOObject(operator)
-
 	res, err := o.Db.SaveTourOperator(touroperator)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -148,6 +147,7 @@ func (o *Service) UpdateTour(tourID string, tour tourModel.UpdateTourDto) (*tour
 	log.Printf("Tour updated successfully: %v", res)
 	return res, nil
 }
+
 func (o *Service) DeleteTour(tourID string) (string, error) {
 	res, err := o.UseCase.DeleteTour(tourID)
 	if err != nil {
