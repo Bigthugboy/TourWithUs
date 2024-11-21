@@ -13,14 +13,17 @@ type TourOperatorUseCase interface {
 	UpdateTour(tourID string, tour tourModel.UpdateTourDto) (*tourModel.TourDto, error) // Update tour details
 	DeleteTour(tourID string) (string, error)                                           // Delete a specific tour
 	ViewTourDetails(tourID string) (*tourModel.TourDto, error)                          // View details of a specific tour
-	ListTours(operatorID string) ([]tourModel.TourDto, error)                           // List all tours by a tour operator
+	ListTours() ([]tourModel.TourDto, error)
+	GetTourByOperatorId(operatorID string, tourId string) (*tourModel.TourDto, error)
+	GetAllTourByOperatorId(operatorID string) ([]tourModel.TourDto, error)
+	// List all tours by a tour operator
 
 	//ViewBookings(tourID string) ([]model.Booking, error) // View all bookings for a specific tour
 	ConfirmBooking(bookingID string) error // Confirm a customer's booking
 	CancelBooking(bookingID string) error  // Cancel a customer's booking
 
 	//GenerateTourReport(tourID string) (*model.TourReport, error) // Generate a report for a specific tour
-	ManageAvailability(tourID string, availability bool) error // Enable or disable availability of a tour
+	ManageAvailability(tourID string) error // Enable or disable availability of a tour
 
 	UpdateProfile(operator model.TourOperator) (*model.CreateTourOperatorResponse, error) // Update the tour operator's profile
 	ChangePassword(req model.ChangePasswordRequest) error                                 // Change the tour operator's password

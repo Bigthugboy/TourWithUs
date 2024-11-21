@@ -14,6 +14,6 @@ type TourUseCaseInputPort interface {
 	SearchTours(query string) ([]tourModel.TourDto, error)
 	DeleteTour(id string) (*tourModel.DeleteResponse, error)
 	UpdateTour(id string, dto tourModel.UpdateTourDto) (*tourModel.TourDto, error)
-	GetTourByTourOperator(tour tourModel.TourDto) (tourModel.TourDto, error)
-	GetToursByTourOperator(tour tourModel.TourDto) ([]tourModel.TourDto, error)
+	GetTourByTourOperator(operatorId string, tourId string) (tourModel.TourDto, error)
+	GetToursByTourOperator(operatorId string) ([]tourModel.TourDto, error)
 }

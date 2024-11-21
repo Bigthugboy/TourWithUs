@@ -252,7 +252,9 @@ func FetchKeycloakPublicKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
 	if resp.StatusCode != http.StatusOK {
 		log.Println("non-200 response: ", resp.StatusCode)
 		return "", errors.New("something went wrong while fetching your key from keycloak")

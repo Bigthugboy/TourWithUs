@@ -241,15 +241,8 @@ func (t *Tour) UpdateTour(id string, dto model.UpdateTourDto) (*model.TourDto, e
 	return &res, nil
 }
 
-func (t *Tour) GetTourByTourOperator(tour model.TourDto) (model.TourDto, error) {
-	if err := services.ValidateRequest(tour); err != nil {
-		return model.TourDto{}, &exception.TourWithUsError{
-			Message:      exception.ErrInvalidRequest,
-			StatusCode:   http.StatusBadRequest,
-			ErrorMessage: err,
-		}
-	}
-	res, err := t.DB.GetTourByTourOperator(tour.OperatorID)
+func (t *Tour) GetTourByTourOperator(operatorId string, tourId string) (model.TourDto, error) {
+	res, err := t.DB.GetTourByTourOperator(operatorId, tourId)
 	if err != nil {
 		return model.TourDto{}, &exception.TourWithUsError{
 			Message:      exception.ErrFailToGetTour,
@@ -261,15 +254,8 @@ func (t *Tour) GetTourByTourOperator(tour model.TourDto) (model.TourDto, error) 
 	return resp, err
 }
 
-func (t *Tour) GetToursByTourOperator(tour model.TourDto) ([]model.TourDto, error) {
-	if err := services.ValidateRequest(tour); err != nil {
-		return []model.TourDto{}, &exception.TourWithUsError{
-			Message:      exception.ErrInvalidRequest,
-			StatusCode:   http.StatusBadRequest,
-			ErrorMessage: err,
-		}
-	}
-	res, err := t.DB.GetListOfToursByOperator(tour.OperatorID)
+func (t *Tour) GetToursByTourOperator(operatorId string) ([]model.TourDto, error) {
+	res, err := t.DB.GetListOfToursByOperator(operatorId)
 	if err != nil {
 		return []model.TourDto{}, &exception.TourWithUsError{
 			Message:      exception.ErrFailToGetTour,

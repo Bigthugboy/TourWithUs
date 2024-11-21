@@ -144,14 +144,17 @@ func (t *TourRepositories) GetToursByType(tourType tourDto.TourType) ([]tourDto.
 	return tours, nil
 }
 
-func (t *TourRepositories) GetTourByTourOperator(tourOperatorId string) (tourDto.TourObject, error) {
+func (t *TourRepositories) GetTourByTourOperator(tourOperatorId, tourId string) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tour DB not initialized")
 	}
+
+	query := t.DB.Where("operator_id = ? AND id = ?", tourOperatorId, tourId)
+
 	var tour tourDto.TourObject
-	if err := t.DB.Where("operator_id = ?", tourOperatorId).First(&tour).Error; err != nil {
+	if err := query.First(&tour).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return tourDto.TourObject{}, fmt.Errorf("no tour found for operator ID: %s", tourOperatorId)
+			return tourDto.TourObject{}, fmt.Errorf("no tour found for operator ID: %s and tour ID: %s", tourOperatorId, tourId)
 		}
 		return tourDto.TourObject{}, fmt.Errorf("error fetching tour: %w", err)
 	}
