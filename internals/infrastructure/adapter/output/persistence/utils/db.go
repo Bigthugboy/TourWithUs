@@ -16,7 +16,7 @@ func NewDatabaseConnection() (*gorm.DB, error) {
 	dbPort := "3306"
 	dbName := "TourWithUs"
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUser, dbPassword, dbHost, dbPort, dbName)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUser, dbPassword, dbHost, dbPort, dbName)
 	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open database connection: %w", err)

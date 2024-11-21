@@ -6,7 +6,7 @@ import (
 )
 
 type TourDto struct {
-	OperatorID      string    `json:"operatorId"validate:"required"`
+	OperatorID      uint      `json:"operatorId"validate:"required"`
 	TourTitle       string    `json:"tourTitle"validate:"required"`
 	Location        string    `json:"location"validate:"required"`
 	Duration        string    `json:"duration"validate:"required"`
@@ -53,7 +53,7 @@ type DeleteResponse struct {
 }
 
 type UpdateTourDto struct {
-	OperatorID      *string  `json:"operator_id"`
+	OperatorID      *uint    `json:"operator_id"`
 	TourTitle       *string  `json:"tour_title"`
 	Location        *string  `json:"location"`
 	Duration        *string  `json:"duration"`

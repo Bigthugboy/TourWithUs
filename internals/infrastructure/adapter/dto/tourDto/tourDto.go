@@ -6,7 +6,7 @@ import (
 )
 
 type TourDto struct {
-	OperatorID      string    `json:"operator_id"`
+	OperatorID      uint      `json:"operator_id"`
 	TourTitle       string    `json:"tour_title"`
 	Location        string    `json:"location"`
 	Duration        string    `json:"duration"`
@@ -26,7 +26,7 @@ type TourDto struct {
 
 type TourObject struct {
 	gorm.Model
-	OperatorID      string    `json:"operator_id"`
+	OperatorID      uint      `json:"operator_id"`
 	TourTitle       string    `json:"tour_title"`
 	Location        string    `json:"location"`
 	Duration        string    `json:"duration"`
@@ -64,7 +64,7 @@ const (
 )
 
 type UpdateTourDto struct {
-	OperatorID      *string  `json:"operator_id"`
+	OperatorID      *uint    `json:"operator_id"`
 	TourTitle       *string  `json:"tour_title"`
 	Location        *string  `json:"location"`
 	Duration        *string  `json:"duration"`

@@ -50,14 +50,7 @@ func (t *Tour) CreateTour(request *model.TourDto) (*model.CreateTourResponse, er
 	return response, nil
 }
 
-func (t *Tour) GetTourById(id string) (*model.TourDto, error) {
-	if id == "" || strings.TrimSpace(id) == "" {
-		return nil, &exception.TourWithUsError{
-			Message:      exception.ErrInvalidTourID,
-			StatusCode:   http.StatusBadRequest,
-			ErrorMessage: errors.New("invalid id"),
-		}
-	}
+func (t *Tour) GetTourById(id uint) (*model.TourDto, error) {
 	res, err := t.DB.GetTourById(id)
 	if err != nil {
 		return nil, &exception.TourWithUsError{
@@ -227,7 +220,7 @@ func (t *Tour) DeleteTour(id string) (*model.DeleteResponse, error) {
 	}, nil
 }
 
-func (t *Tour) UpdateTour(id string, dto model.UpdateTourDto) (*model.TourDto, error) {
+func (t *Tour) UpdateTour(id uint, dto model.UpdateTourDto) (*model.TourDto, error) {
 	req := tourMapper.MapUpdateTourDtoToTourObject(&dto)
 	tour, err := t.DB.UpdateTour(id, req)
 	if err != nil {

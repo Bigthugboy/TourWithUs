@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Bigthugboy/TourWithUs/internals/infrastructure/adapter/dto/tourDto"
 	"github.com/jinzhu/gorm"
+	"log"
 	"time"
 )
 
@@ -31,20 +32,28 @@ func (t *TourRepositories) GetAllTours() ([]tourDto.TourObject, error) {
 		return nil, errors.New("tourModel DB Not Initialized")
 	}
 	var tours []tourDto.TourObject
-	if err := t.DB.Find(&tours).Error; err != nil {
+	if err := t.DB.Table("TourWithUs.tour_objects").Find(&tours).Error; err != nil {
 		return nil, fmt.Errorf("exception getting all tours: %w", err)
 	}
 	return tours, nil
 }
 
-func (t *TourRepositories) GetTourById(id string) (tourDto.TourObject, error) {
+func (t *TourRepositories) GetTourById(id uint) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tourModel DB Not Initialized")
 	}
 	var tour tourDto.TourObject
-	if err := t.DB.Where("id = ?", id).First(&tour).Error; err != nil {
-		return tourDto.TourObject{}, fmt.Errorf("exception getting tourModel: %w", err)
+	err := t.DB.Table("TourWithUs.tour_objects").
+		Where("id = ?", id).
+		First(&tour).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return tourDto.TourObject{}, fmt.Errorf("tour with id %d not found", id)
+		}
+		return tourDto.TourObject{}, fmt.Errorf("error fetching tour: %w", err)
 	}
+
 	return tour, nil
 }
 
@@ -53,7 +62,13 @@ func (t *TourRepositories) GetAvailableTours() ([]tourDto.TourObject, error) {
 		return nil, errors.New("tourModel DB Not Initialized")
 	}
 	var tours []tourDto.TourObject
-	if err := t.DB.Where("Availability = ?", true).Find(&tours).Error; err != nil {
+	err := t.DB.Table("TourWithUs.tour_objects").
+		Where("Availability = ?", true).
+		First(&tours).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []tourDto.TourObject{}, errors.New("tour object not found")
+		}
 		return []tourDto.TourObject{}, fmt.Errorf("exception getting tourModel: %w", err)
 	}
 	return tours, nil
@@ -119,13 +134,18 @@ func (t *TourRepositories) DeleteTour(id string) error {
 	return nil
 }
 
-func (t *TourRepositories) UpdateTour(id string, updatedFields tourDto.UpdateTourDto) (tourDto.TourObject, error) {
+func (t *TourRepositories) UpdateTour(id uint, updatedFields tourDto.UpdateTourDto) (tourDto.TourObject, error) {
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tourModel DB Not Initialized")
 	}
 	var tour tourDto.TourObject
-	result := t.DB.Model(&tour).Where("id = ?", id).Updates(updatedFields)
-	if err := result.Error; err != nil {
+	log.Println("------->", (tour))
+	err := t.DB.Table("TourWithUs.tour_objects").
+		Where("id = ?", id).
+		Updates(updatedFields).Error
+	log.Println("....", updatedFields)
+
+	if err != nil {
 		return tourDto.TourObject{}, fmt.Errorf("exception updating tourModel: %w", err)
 	}
 	return tour, nil
@@ -148,7 +168,6 @@ func (t *TourRepositories) GetTourByTourOperator(tourOperatorId, tourId string) 
 	if t.DB == nil {
 		return tourDto.TourObject{}, errors.New("tour DB not initialized")
 	}
-
 	query := t.DB.Where("operator_id = ? AND id = ?", tourOperatorId, tourId)
 
 	var tour tourDto.TourObject

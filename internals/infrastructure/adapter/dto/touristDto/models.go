@@ -15,7 +15,6 @@ type TouristDetails struct {
 
 type TouristObject struct {
 	gorm.Model
-	ID               uint `gorm:"primaryKey"`
 	FirstName        string
 	LastName         string
 	Email            string `gorm:"unique"`

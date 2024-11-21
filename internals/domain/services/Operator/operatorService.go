@@ -128,7 +128,7 @@ func (o *Service) CreateTour(tour tourModel.TourDto) (*tourModel.CreateTourRespo
 	return res, nil
 }
 
-func (o *Service) UpdateTour(tourID string, tour tourModel.UpdateTourDto) (*tourModel.TourDto, error) {
+func (o *Service) UpdateTour(tourID uint, tour tourModel.UpdateTourDto) (*tourModel.TourDto, error) {
 	if err := services.ValidateRequest(tour); err != nil {
 		return nil, &exception.TourWithUsError{
 			Message:      exception.ErrValidatingRequest,
@@ -163,7 +163,7 @@ func (o *Service) DeleteTour(tourID string) (string, error) {
 	return res.Message, nil
 }
 
-func (o *Service) ViewTourDetails(tourID string) (*tourModel.TourDto, error) {
+func (o *Service) ViewTourDetails(tourID uint) (*tourModel.TourDto, error) {
 	res, err := o.UseCase.GetTourById(tourID)
 	if err != nil {
 		log.Printf("Failed to get tour with ID %s: %v", tourID, err)
@@ -228,10 +228,10 @@ func (o *Service) CancelBooking(bookingID string) error {
 	panic("implement me")
 }
 
-func (o *Service) ManageAvailability(tourID string) error {
+func (o *Service) ManageAvailability(tourID uint) (string, error) {
 	res, err := o.UseCase.GetTourById(tourID)
 	if err != nil {
-		return &exception.TourWithUsError{
+		return "", &exception.TourWithUsError{
 			Message:      exception.ErrFailToGetTour,
 			StatusCode:   http.StatusInternalServerError,
 			ErrorMessage: err,
@@ -241,13 +241,13 @@ func (o *Service) ManageAvailability(tourID string) error {
 	dto := tourOperatorMapper.MapperTourDtoToUpdateTourDto(*res)
 	res, err = o.UseCase.UpdateTour(tourID, dto)
 	if err != nil {
-		return &exception.TourWithUsError{
+		return "", &exception.TourWithUsError{
 			Message:      exception.ErrFailToUpdateTour,
 			StatusCode:   http.StatusInternalServerError,
 			ErrorMessage: err,
 		}
 	}
-	return nil
+	return "Tour availability change successfully", nil
 }
 
 func (o *Service) UpdateProfile(operator model.TourOperator) (*model.CreateTourOperatorResponse, error) {
