@@ -11,7 +11,5 @@ func SetupRoutes(r *gin.Engine, service *controller.TouristController) {
 	r.POST("/login", service.LoginTourist)
 	protectedRouter := r.Group("/api/auth")
 	protectedRouter.Use(middleware.AuthMiddleware())
-	{
 
-	}
 }
